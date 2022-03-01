@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: @profileActive@
+
+server:
+  port: 8080
+
+mybatis:
+  mapper-locations: classpath:/mapper/**Mapper.xml
+  type-aliases-package: com.lczq.zgscweb.mapper
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+
+swagger:
+  title: 测试应用接口文档
+  description: 测试应用接口文档
+  url:
+  name:
+  email:
+

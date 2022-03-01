@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.lczq.dbquery.mapper.QueryMapper">
+    <resultMap id="queryConfigMap" type="com.lczq.dbquery.entities.QueryConfig">
+        <result property="selectId" column="select_id" />
+        <result property="querySql" column="query_sql" />
+        <result property="dataSource" column="data_source" />
+        <result property="cacheTime" column="cache_time" />
+        <result property="isEnable" column="is_enable" />
+        <result property="enableCache" column="enable_cache" />
+    </resultMap>
+    <select id="queryConfigBySelectId" parameterType="String" resultMap="queryConfigMap">
+        SELECT * FROM query_config WHERE select_id = #{selectId}
+    </select>
+
+    <resultMap id="queryParamsMap" type="com.lczq.dbquery.entities.QueryParams">
+        <result property="selectId" column="select_id" />
+        <result property="paramName" column="param_name" />
+        <result property="paramType" column="param_type" />
+    </resultMap>
+    <select id="queryParamsBySelectId" parameterType="String" resultMap="queryParamsMap">
+        SELECT * FROM query_params WHERE select_id = #{selectId}
+    </select>
+
+    <resultMap id="querySourceMap" type="com.lczq.dbquery.entities.DataSource">
+        <result property="name" column="name" />
+        <result property="url" column="url" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="driver" column="driver" />
+    </resultMap>
+
+    <select id="queryDataSourceBySourceName" parameterType="String" resultMap="querySourceMap">
+        SELECT * FROM data_sources WHERE name = #{sourceName}
+    </select>
+    <resultMap id="queryResuleMap" type="com.lczq.dbquery.entities.QueryEntity">
+        <result property="flowKey" column="flowkey" javaType="java.lang.String" />
+        <result property="flowSequence" column="flow_sequence" javaType="java.lang.String" />
+        <result property="qid" column="qid" javaType="java.lang.Integer" />
+        <result property="queryKey" column="querykey" javaType="java.lang.String" />
+        <result property="querySql" column="querySQL" javaType="java.lang.String" />
+        <result property="DBID" column="DB_id" javaType="java.lang.Integer" />
+        <result property="did" column="did" javaType="java.lang.Integer" />
+        <result property="dbName" column="db_name" javaType="java.lang.String" />
+        <result property="dbType" column="db_type" javaType="java.lang.Integer" />
+        <result property="dbUrl" column="db_url" javaType="java.lang.String" />
+        <result property="dbHost" column="db_host" javaType="java.lang.String" />
+        <result property="dbPort" column="db_port" javaType="java.lang.String" />
+        <result property="dbKey" column="db_key" javaType="java.lang.String" />
+        <result property="dbUser" column="db_user" javaType="java.lang.String" />
+        <result property="dbPwd" column="db_pwd" javaType="java.lang.String" />
+    </resultMap>
+
+    <select id="findFlowByKey" parameterType="String" resultMap="queryResuleMap">
+        SELECT
+        f.flowkey,
+        f.flow_sequence,
+        t.qid,
+        t.querykey,
+        t.querySQL,
+        t.DB_id,
+        d.did,
+        d.db_name,
+        d.db_type,
+        d.db_url,
+        d.db_host,
+        d.db_port,
+        d.db_key,
+        d.db_user,
+        d.db_pwd
+        FROM
+        query_flow_info f
+        LEFT JOIN query_table_info t ON f.flowkey = t.querykey
+        LEFT JOIN query_db_info d ON t.db_id = d.did
+        where f.is_enabled=1
+        and t.is_enabled=1
+        and f.flowkey=#{flowkey}
+    </select>
+</mapper>
+
