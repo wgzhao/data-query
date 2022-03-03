@@ -1,6 +1,12 @@
 spring:
   profiles:
     active: @profileActive@
+  jpa:
+    open-in-view: false
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
 
 server:
   port: 8080
@@ -13,10 +19,7 @@ pagehelper:
   helperDialect: mysql
   reasonable: true
 
-swagger:
-  title: 测试应用接口文档
-  description: 测试应用接口文档
-  url:
-  name:
-  email:
-
+logging:
+  file:
+    path: logs/
+    name: application.log
