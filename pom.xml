@@ -18,7 +18,7 @@
 
     <scm>
         <connection>scm:git:https://gitlab.lczq.com/grp-arch/data-query.git</connection>
-        <developerConnection>scm:git:git@gitlab.lczq.com:grp-arch/data-query.git</developerConnection>
+        <developerConnection>scm:git:git@gilab.lczq.com:grp-arch/data-query.git</developerConnection>
         <url>https://gitlab.lczq.com/grp-arch/data-query</url>
         <tag>HEAD</tag>
     </scm>
