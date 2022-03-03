@@ -23,3 +23,6 @@ logging:
   file:
     path: logs/
     name: application.log
+  logback:
+    rollingpolicy:
+      max-history: 7
