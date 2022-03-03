@@ -16,6 +16,13 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <scm>
+        <connection>scm:git:https://gitlab.lczq.com/grp-arch/data-query.git</connection>
+        <developerConnection>scm:git:git@gilab.lczq.com:grp-arch/data-query.git</developerConnection>
+        <url>https://gitlab.lczq.com/grp-arch/data-query</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencies>
 
         <!-- 数据库连接 -->
@@ -97,18 +104,24 @@
 
     <profiles>
         <profile>
-            <id>local</id>
+            <id>dev</id>
             <properties>
-                <profileActive>local</profileActive>
+                <profileActive>dev</profileActive>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
         <profile>
-            <id>sit</id>
+            <id>test</id>
             <properties>
-                <profileActive>sit</profileActive>
+                <profileActive>test</profileActive>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profileActive>prod</profileActive>
             </properties>
         </profile>
     </profiles>
@@ -118,6 +131,27 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <preparationGoals>clean verify -DskipTests</preparationGoals>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>lczq</id>
+            <url>https://nexus.lczq.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>lczq</id>
+            <url>https://nexus.lczq.com/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
 </project>

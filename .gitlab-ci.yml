@@ -57,7 +57,7 @@ build_app_only_test_branch:
   script:
     - echo "======== start package ========"
     - mvn versions:set -DnewVersion=test
-    - mvn $MAVEN_CLI_OPTS deploy -Ptest
+    - mvn $MAVEN_CLI_OPTS deploy -Ptest -DskipTests
   artifacts:
     paths:
       - target/*.jar
