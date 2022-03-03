@@ -1,19 +1,13 @@
 package com.lczq.dbquery.param;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-@ApiModel("分页请求参数")
 public class PageRequest
         implements Serializable
 {
     private static final long serialVersionUID = 6612473519063971590L;
-    @ApiModelProperty(value = "页码，从0开始，默认值0", example = "0", dataType = "java.lang.Integer")
     private Integer pageNum = 0;
-    @ApiModelProperty(value = "每页数据条数，默认值10", example = "10", dataType = "java.lang.Integer")
     private Integer pageSize = 10;
 
     public boolean equals(Object o)

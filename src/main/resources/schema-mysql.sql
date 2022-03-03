@@ -1,5 +1,8 @@
-create database if not exists data_query;
-CREATE TABLE `query_config`
+CREATE DATABASE IF NOT EXISTS data_query;
+
+USE data_query;
+
+CREATE TABLE IF NOT EXISTS `query_config`
 (
     `select_id`    varchar(200) NOT NULL comment '查询ID，必须唯一',
     `query_sql`    text         NOT NULL comment '查询SQL语句',
@@ -12,7 +15,7 @@ CREATE TABLE `query_config`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-CREATE TABLE `query_params`
+CREATE TABLE IF NOT EXISTS `query_params`
 (
     `select_id`   varchar(200) NOT NULL comment '查询ID，必须唯一',
     `param_name`  varchar(200) NOT NULL comment '参数名',
@@ -22,9 +25,8 @@ CREATE TABLE `query_params`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-create unique index idx_query_params on query_params (select_id, param_name, param_type);
 
-create table data_sources
+create table IF NOT EXISTS data_sources
 (
     name     varchar(200) not null comment '数据源名称',
     url      varchar(200) not null comment '数据源URL,必须是jdbc:xxx://xxx:xxx/xxx',
@@ -33,14 +35,3 @@ create table data_sources
     driver   varchar(200) not null comment '驱动类名',
     primary key (name)
 );
-
-insert into data_sources
-values ('trino', 'jdbc:trino://localhost:8080/hive/default', 'hive', '', 'io.trino.jdbc.TrinoDriver'),
-       ('allsql', 'jdbc:trino://localhost:8080/hive/default', 'hive', '', 'io.trino.jdbc.TrinoDriver'),
-       ('phoenix', 'jdbc:phoenix:localhost:2181/hive/default', 'hive', '', 'org.apache.phoenix.jdbc.PhoenixDriver'),
-       ('mysql', 'jdbc:mysql://localhost:3306/test', 'root', '', 'com.mysql.cj.jdbc.Driver');
-
--- test data
-
-insert into query_config
-values ('test_query', 'select * from data_query.data_sources', 'mysql', 60, 'test query', 1, 1);

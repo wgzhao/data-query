@@ -2,6 +2,7 @@ package com.lczq.dbquery.service;
 
 import com.lczq.dbquery.entities.DataSource;
 import com.lczq.dbquery.entities.QueryConfig;
+import com.lczq.dbquery.entities.QueryResult;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -10,16 +11,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
 public class ConnectionDB
 {
 
-    public List<Map<String, Object>> executeSQL(QueryConfig queryConfig, DataSource dataSource)
+    public QueryResult executeSQL(QueryConfig queryConfig, DataSource dataSource)
             throws ClassNotFoundException, SQLException
     {
         String dbUrl = dataSource.getUrl();
@@ -28,7 +27,7 @@ public class ConnectionDB
         String jdbcDriver = dataSource.getDriver();
         String sql = queryConfig.getQuerySql();
 
-        List<Map<String, Object>> rsList = new ArrayList<>();
+        QueryResult rsList = new QueryResult();
         Map<String, Object> rsMap;
         Connection conn;
         Statement stmt;
@@ -45,7 +44,7 @@ public class ConnectionDB
             for (int i = 1; i < numberOfColumns + 1; i++) {
                 rsMap.put(rsmd.getColumnName(i), rs.getObject(i));
             }
-            rsList.add(rsMap);
+            rsList.setOneMap(rsMap);
         }
         rs.close();
         stmt.close();
