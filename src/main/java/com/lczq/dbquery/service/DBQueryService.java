@@ -9,5 +9,5 @@ import java.util.Map;
 public interface DBQueryService
 {
 
-    Pair<String, QueryResult> query(String selectId, Map<String, String> params);
+    MyPair<String, QueryResult> query(String selectId, Map<String, String> params);
 }

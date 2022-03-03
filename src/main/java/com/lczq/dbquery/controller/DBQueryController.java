@@ -4,7 +4,7 @@ import com.lczq.dbquery.entities.QueryResult;
 import com.lczq.dbquery.param.RestResponse;
 import com.lczq.dbquery.param.RestResponseBuilder;
 import com.lczq.dbquery.service.DBQueryService;
-import javafx.util.Pair;
+import com.lczq.dbquery.service.MyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,12 +34,12 @@ public class DBQueryController
     public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams)
     {
         logger.info("Begin to query with selectId {} and params {}", selectId, allParams);
-        Pair<String, QueryResult> result = queryService.query(selectId, allParams);
-        if (result.getValue() == null) {
-            return RestResponseBuilder.fail(result.getKey());
+        MyPair<String, QueryResult> result = queryService.query(selectId, allParams);
+        if (result.getSecond() == null) {
+            return RestResponseBuilder.fail(result.getFirst());
         }
         else {
-            return RestResponseBuilder.succ((long) result.getValue().getResult().size(), result.getValue());
+            return RestResponseBuilder.succ((long) result.getSecond().getResult().size(), result.getSecond());
         }
     }
 }
