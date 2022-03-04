@@ -35,3 +35,12 @@ create table IF NOT EXISTS data_sources
     driver   varchar(200) not null comment '驱动类名',
     primary key (name)
 );
+
+create table if not exists signs
+(
+    app_id varchar(16)  not null comment 'app_id',
+    app_key varchar(32) not null comment 'app_key',
+    primary key (app_id)
+) comment '签名表'
+    ENGINE = InnoDB
+    DEFAULT CHARSET = latin1;

@@ -36,4 +36,10 @@ public class RestResponseBuilder
     {
         return of(500, message);
     }
+
+    public static <T> RestResponse<T>  fail(int status, String message)
+    {
+        return of(status, message);
+    }
+
 }

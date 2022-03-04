@@ -36,5 +36,23 @@
     <select id="queryDataSourceBySourceName" parameterType="String" resultMap="querySourceMap">
         SELECT * FROM data_sources WHERE name = #{sourceName}
     </select>
+
+    <resultMap id="querySignMap" type="com.lczq.dbquery.entities.SignEntity">
+        <result property="appId" column="app_id" />
+        <result property="appKey" column="app_key" />
+    </resultMap>
+
+    <select id="querySignByAppId" parameterType="String" resultMap="querySignMap">
+        SELECT * FROM signs WHERE app_id = #{appId}
+    </select>
+
+    <resultMap id="saveSignMap" type="com.lczq.dbquery.entities.SignEntity">
+        <result property="appId" column="app_id" />
+        <result property="appKey" column="app_key" />
+    </resultMap>
+
+    <insert id="saveSign" parameterType="com.lczq.dbquery.entities.SignEntity">
+        INSERT INTO signs(app_id, app_key) VALUES(#{appId}, #{appKey})
+    </insert>
 </mapper>
 

@@ -7,17 +7,13 @@ spring:
     init:
       mode: always
       encoding: UTF-8
+      platform: mysql
 
 server:
-  port: 8080
+  port: 9090
 
 mybatis:
   mapper-locations: classpath:/mapper/**Mapper.xml
-  type-aliases-package: com.lczq.zgscweb.mapper
-
-pagehelper:
-  helperDialect: mysql
-  reasonable: true
 
 logging:
   file:
