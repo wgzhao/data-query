@@ -78,7 +78,7 @@ public class DBQueryController
         }
 
         MyPair<String, QueryResult> result = queryService.query(selectId, allParams);
-        if (result.getSecond() == null) {
+        if (result.getSecond() == null || result.getSecond().getResult() == null) {
             return RestResponseBuilder.fail(result.getFirst());
         }
         else {

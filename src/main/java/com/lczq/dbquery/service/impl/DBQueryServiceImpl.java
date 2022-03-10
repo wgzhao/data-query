@@ -77,7 +77,7 @@ public class DBQueryServiceImpl
             logger.error("The query with selectId {} has failure: {}", selectId, e);
             return new MyPair<>("查询失败，请查看服务日志", null);
         }
-        if (rsList == null) {
+        if (rsList == null || rsList.getResult() == null) {
             return new MyPair<>("未知异常", null);
         }
         else {
