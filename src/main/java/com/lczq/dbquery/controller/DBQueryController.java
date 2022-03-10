@@ -57,7 +57,7 @@ public class DBQueryController
         if (MAGIC_SIGN.equals(sign)) {
             // it's magic ,skip all validation
             //TODO: magic sign should be configurable, and ONLY can be used in test env
-
+            //
         } else {
             // check _appId is exists or not
             String appId = allParams.getOrDefault("_appId", null);

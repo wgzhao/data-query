@@ -68,6 +68,7 @@ public class DBQueryServiceImpl
 
         DataSource dataSource = queryMapper.queryDataSourceBySourceName(queryConfig.getDataSource());
         //fill back with real execute sql statement
+        logger.info("execute sql is {}", executeSql);
         queryConfig.setQuerySql(executeSql);
         QueryResult rsList;
         try {

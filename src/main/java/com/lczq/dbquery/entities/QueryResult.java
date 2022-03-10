@@ -9,7 +9,7 @@ public class QueryResult implements Serializable
 {
     private static final long serialVersionUID = 5237730257103305078L;
 
-    private List<Map<String, Object>> result;
+    private List<Map<String, Object>> result = new ArrayList<>();
 
     public List<Map<String, Object>> getResult()
     {
@@ -23,9 +23,6 @@ public class QueryResult implements Serializable
 
     public void setOneMap(Map<String, Object> map)
     {
-        if (this.result == null) {
-            this.result = new ArrayList<>();
-        }
         this.result.add(map);
     }
 }
