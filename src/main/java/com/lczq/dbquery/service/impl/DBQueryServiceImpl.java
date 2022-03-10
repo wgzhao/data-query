@@ -61,7 +61,7 @@ public class DBQueryServiceImpl
         List<QueryParams> queryParamsList = queryMapper.queryParamsBySelectId(selectId);
         Map<String, String> valuesMap = new HashMap<>();
         for (QueryParams queryParams : queryParamsList) {
-            valuesMap.put(queryParams.getParamName(), allParams.getOrDefault(queryParams.getParamName(), null));
+            valuesMap.put(queryParams.getParamName(), allParams.getOrDefault(queryParams.getParamName(), ""));
         }
         StringSubstitutor sub = new StringSubstitutor(valuesMap);
         String executeSql = sub.replace(queryConfig.getQuerySql());
