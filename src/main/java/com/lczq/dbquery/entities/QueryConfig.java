@@ -1,5 +1,7 @@
 package com.lczq.dbquery.entities;
 
+import javax.persistence.Entity;
+
 public class QueryConfig
 {
     private String selectId;
