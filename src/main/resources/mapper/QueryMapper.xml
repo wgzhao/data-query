@@ -21,6 +21,7 @@
         <result property="paramName" column="param_name" />
         <result property="paramType" column="param_type" />
     </resultMap>
+
     <select id="queryParamsBySelectId" parameterType="String" resultMap="queryParamsMap">
         SELECT * FROM query_params WHERE select_id = #{selectId}
     </select>
@@ -54,5 +55,34 @@
     <insert id="saveSign" parameterType="com.lczq.dbquery.entities.SignEntity">
         INSERT INTO signs(app_id, app_key) VALUES(#{appId}, #{appKey})
     </insert>
+
+    <resultMap id="saveQueryConfigMap" type="com.lczq.dbquery.entities.QueryConfig">
+        <result property="selectId" column="select_id" />
+        <result property="querySql" column="query_sql" />
+        <result property="dataSource" column="data_source" />
+        <result property="cacheTime" column="cache_time" />
+
+    </resultMap>
+    <insert id="saveQueryConfig" parameterType="com.lczq.dbquery.entities.QueryConfig">
+        INSERT INTO query_config(select_id, query_sql, data_source, cache_time) VALUES(#{selectId}, #{querySql}, #{dataSource}, #{cacheTime})
+    </insert>
+
+    <resultMap id="saveQueryParamsMap" type="com.lczq.dbquery.entities.QueryParams">
+        <result property="selectId" column="select_id" />
+        <result property="paramName" column="param_name" />
+        <result property="paramType" column="param_type" />
+    </resultMap>
+    <insert id="saveQueryParams" parameterType="com.lczq.dbquery.entities.QueryParams">
+        REPLACE INTO query_params(select_id, param_name, param_type) VALUES(#{selectId}, #{paramName}, #{paramType})
+    </insert>
+
+    <delete id="deleteQueryConfig" parameterType="String">
+        DELETE FROM query_config WHERE select_id = #{selectId}
+    </delete>
+
+    <delete id="deleteQueryParams" parameterType="String">
+        DELETE FROM query_params WHERE select_id = #{selectId}
+    </delete>
+
 </mapper>
 

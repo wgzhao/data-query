@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import java.util.Map;
-import java.util.Objects;
+
+import static com.lczq.dbquery.constant.Constants.MAGIC_SIGN;
+
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -51,25 +54,31 @@ public class DBQueryController
             return RestResponseBuilder.fail(400, "签名不存在");
         }
 
-        // check _appId is exists or not
-        String appId = allParams.getOrDefault("_appId", null);
-        if (appId == null || appId.isEmpty()) {
-            return RestResponseBuilder.fail(400, "缺少必要的参数 _appId");
-        }
+        if (MAGIC_SIGN.equals(sign)) {
+            // it's magic ,skip all validation
+            //TODO: magic sign should be configurable, and ONLY can be used in test env
+            //
+        } else {
+            // check _appId is exists or not
+            String appId = allParams.getOrDefault("_appId", null);
+            if (appId == null || appId.isEmpty()) {
+                return RestResponseBuilder.fail(400, "缺少必要的参数 _appId");
+            }
 
-        SignEntity signEntity = signService.querySign(appId);
+            SignEntity signEntity = signService.querySign(appId);
 
-        if (signEntity == null || signEntity.getAppKey() == null) {
-            return RestResponseBuilder.fail(400, "无效的 _appId");
-        }
+            if (signEntity == null || signEntity.getAppKey() == null) {
+                return RestResponseBuilder.fail(400, "无效的 _appId");
+            }
 
-        System.out.printf("appKey = %s%n", signEntity.getAppKey());
-        if (!SignUtil.validSign(allParams, signEntity)) {
-            return RestResponseBuilder.fail(400, "无效签名");
+            System.out.printf("appKey = %s%n", signEntity.getAppKey());
+            if (!SignUtil.validSign(allParams, signEntity)) {
+                return RestResponseBuilder.fail(400, "无效签名");
+            }
         }
 
         MyPair<String, QueryResult> result = queryService.query(selectId, allParams);
-        if (result.getSecond() == null) {
+        if (result.getSecond() == null || result.getSecond().getResult() == null) {
             return RestResponseBuilder.fail(result.getFirst());
         }
         else {

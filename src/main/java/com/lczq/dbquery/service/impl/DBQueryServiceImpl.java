@@ -61,13 +61,14 @@ public class DBQueryServiceImpl
         List<QueryParams> queryParamsList = queryMapper.queryParamsBySelectId(selectId);
         Map<String, String> valuesMap = new HashMap<>();
         for (QueryParams queryParams : queryParamsList) {
-            valuesMap.put(queryParams.getParamName(), allParams.getOrDefault(queryParams.getParamName(), null));
+            valuesMap.put(queryParams.getParamName(), allParams.getOrDefault(queryParams.getParamName(), ""));
         }
         StringSubstitutor sub = new StringSubstitutor(valuesMap);
         String executeSql = sub.replace(queryConfig.getQuerySql());
 
         DataSource dataSource = queryMapper.queryDataSourceBySourceName(queryConfig.getDataSource());
         //fill back with real execute sql statement
+        logger.info("execute sql is {}", executeSql);
         queryConfig.setQuerySql(executeSql);
         QueryResult rsList;
         try {
@@ -77,7 +78,7 @@ public class DBQueryServiceImpl
             logger.error("The query with selectId {} has failure: {}", selectId, e);
             return new MyPair<>("查询失败，请查看服务日志", null);
         }
-        if (rsList == null) {
+        if (rsList == null || rsList.getResult() == null) {
             return new MyPair<>("未知异常", null);
         }
         else {

@@ -21,4 +21,13 @@ public interface QueryMapper
     SignEntity querySignByAppId(String appId);
 
     void saveSign(SignEntity signEntity);
+
+    void saveQueryConfig(QueryConfig queryConfig);
+
+    void saveQueryParams(QueryParams queryParams);
+
+    void deleteQueryConfig(String selectId);
+
+    void deleteQueryParams(String selectId);
+
 }
