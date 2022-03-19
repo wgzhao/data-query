@@ -4,11 +4,8 @@ import com.lczq.dbquery.entities.SignEntity;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
-
-import static com.lczq.dbquery.constant.Constants.SIGN;
 
 public class SignUtil
 {
@@ -25,13 +22,12 @@ public class SignUtil
         return signEntity;
     }
 
-    public static boolean validSign(Map<String, String> allParams, SignEntity signEntity)
+    public static boolean validSign(String sign, Map<String, String> queryParams, SignEntity signEntity)
     {
-        String passSign = allParams.get(SIGN);
         // sort real params
-        String sb = ParamUtil.sortedParams(allParams) + signEntity.toString();
+        String sb = ParamUtil.sortedParams(queryParams) + signEntity.toString();
         String validSign = DigestUtils.md5DigestAsHex(sb.getBytes(StandardCharsets.UTF_8));
-        return validSign.equals(passSign);
+        return validSign.equals(sign);
 
     }
 }

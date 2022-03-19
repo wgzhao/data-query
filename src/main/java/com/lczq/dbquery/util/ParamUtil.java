@@ -2,7 +2,7 @@ package com.lczq.dbquery.util;
 
 import org.springframework.util.DigestUtils;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -20,11 +20,34 @@ public class ParamUtil
 
     public static String sortedParams(Map<String, String> params)
     {
-        final List<String> collect = params.keySet().stream().filter(key -> key.startsWith("_")).collect(Collectors.toList());
-        collect.forEach(params::remove);
         StringJoiner joiner = new StringJoiner("&");
         params.keySet().stream().sorted().forEach(key -> joiner.add(key + "=" + params.get(key)));
 
         return joiner.toString();
+    }
+
+    public static Map<String, String> lowercaseParams (Map<String, String> params)
+    {
+        Map<String, String> lowerParams = new HashMap<>(params.size());
+        for (Map.Entry<String, String> entry : params.entrySet())
+        {
+            lowerParams.put(entry.getKey().toLowerCase(), entry.getValue());
+        }
+        return lowerParams;
+    }
+
+    /**
+     * extract all query parameters from the request
+     * @param allParams all query parameters
+     * @return a map of query parameters
+     */
+    public static Map<String, String> getQueryParams(Map<String, String> allParams)
+    {
+        return allParams.keySet().stream().filter(key -> ! key.startsWith("_")).collect(Collectors.toMap(key -> key, allParams::get));
+    }
+
+    public static Map<String, String> getControlParams(Map<String, String> allParams)
+    {
+        return allParams.keySet().stream().filter(key -> key.startsWith("_")).collect(Collectors.toMap(key -> key, allParams::get));
     }
 }
