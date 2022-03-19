@@ -18,9 +18,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class DBQueryServiceImpl
@@ -39,7 +42,7 @@ public class DBQueryServiceImpl
     private CacheUtil cacheUtil;
 
     @Override
-    public MyPair<String, QueryResult> query(String selectId, Map<String, String> allParams)
+    public MyPair<String, QueryResult> query(String selectId, Map<String, String> lowerQueryParams)
     {
         QueryConfig queryConfig = queryMapper.queryConfigBySelectId(selectId);
         if (queryConfig == null) {
@@ -52,7 +55,7 @@ public class DBQueryServiceImpl
         }
         if (queryConfig.isEnableCache() && queryConfig.getCacheTime() > 0) {
             // try to get data from cache
-            String redisKey = ParamUtil.generateKey(allParams);
+            String redisKey = ParamUtil.generateKey(lowerQueryParams);
             if (cacheUtil.exists(redisKey)) {
                 logger.info("The result has retrieved from cache with key: {}", redisKey);
                 return new MyPair<>("success", (QueryResult) cacheUtil.get(redisKey));
@@ -60,8 +63,18 @@ public class DBQueryServiceImpl
         }
         List<QueryParams> queryParamsList = queryMapper.queryParamsBySelectId(selectId);
         Map<String, String> valuesMap = new HashMap<>();
+        // 所有写入 query_params 表的参数都是必选参数，其他从 SQL 语句提取出来的参数为可选参数，同时 allParams 中的 key 也是小写
         for (QueryParams queryParams : queryParamsList) {
-            valuesMap.put(queryParams.getParamName(), allParams.getOrDefault(queryParams.getParamName(), ""));
+            // query_params 表中的参数名在写入时已经变成小写
+            if (! lowerQueryParams.containsKey(queryParams.getParamName())) {
+                return new MyPair<>("参数 " + queryParams.getParamName() + " 不存在", null);
+            }
+            valuesMap.put(queryParams.getParamName(), lowerQueryParams.get(queryParams.getParamName()));
+        }
+        // 提取 SQL 语句中的参数，参数是 ${xxx} 形式
+        List<String> otherParams = getParamNames(queryConfig.getQuerySql());
+        for (String paramName : otherParams) {
+            valuesMap.put(paramName, lowerQueryParams.getOrDefault(paramName.toLowerCase(), ""));
         }
         StringSubstitutor sub = new StringSubstitutor(valuesMap);
         String executeSql = sub.replace(queryConfig.getQuerySql());
@@ -84,9 +97,24 @@ public class DBQueryServiceImpl
         else {
             // need write to cache or not ?
             if (queryConfig.isEnableCache()) {
-                cacheUtil.set(ParamUtil.generateKey(allParams), rsList, queryConfig.getCacheTime());
+                cacheUtil.set(ParamUtil.generateKey(lowerQueryParams), rsList, queryConfig.getCacheTime());
             }
             return new MyPair<>("success", rsList);
         }
+    }
+
+    private List<String> getParamNames(String sql)
+    {
+        List<String> result = new ArrayList<>();
+        // all variable define are formed alphabetic, digits, underscore.
+        String regex = "\\$\\{(?<name>\\w+?)\\}";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(sql);
+        while (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                result.add(matcher.group(i));
+            }
+        }
+        return result;
     }
 }

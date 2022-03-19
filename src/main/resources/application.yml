@@ -23,3 +23,6 @@ logging:
   logback:
     rollingpolicy:
       max-history: 7
+pagehelper:
+  auto-dialect: true
+  support-methods-arguments: true

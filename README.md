@@ -39,8 +39,8 @@ curl -X GET http://localhost:9090/dataquery/api/v1/query?selectId=xxxx&k1=v1&k2=
 签名的实现方式为：
 
 1. 将所有的查询参数按照参数名的字典序排序，拼接成一个字符串，比如：查询参数为 `n1=v1&m2=v2&selectId=q1`，排序后的字符串为 `m2=v2&n1=vv1&selectId=q1`，假定为字符串 `str1`
-2. 将分配给应用的 `appId` 以及 `appKey` 直接拼接在 `str1` 后面，变成 `m2=v2&n1=vv1&selectId=q172f392f2e6a90e9a70162f804fd30a7179b8ebded08e8dda`，假定为字符串 `str2`
-3. 对 `str2` 进行 `md5` 签名，得到签名字符串 `07ad5a69745819661466217364d228a4`，这便是该查询的签名
+2. 将分配给应用的 `appId` 以及 `appKey` 直接拼接在 `str1` 后面，变成 `m2=v2&n1=v1&selectId=q172f392f2e6a90e9a70162f804fd30a7179b8ebded08e8dda`，假定为字符串 `str2`
+3. 对 `str2` 进行 `md5` 签名，得到签名字符串 `0fe35a85735c112dae68ced204850fe4`，这便是该查询的签名
 
 如果是 Java 编程的话，实现逻辑如下：
 
