@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 
 import static com.lczq.dbquery.constant.Constants.APP_ID;
 import static com.lczq.dbquery.constant.Constants.MAGIC_SIGN;
 import static com.lczq.dbquery.constant.Constants.SIGN;
+import static com.lczq.dbquery.constant.Constants.WHITE_IP_LIST;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -56,14 +58,14 @@ public class DBQueryController
     }
 
     @RequestMapping(value = "/query", produces = "application/json;charset=UTF-8")
-    public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams)
+    public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams, HttpServletRequest request)
     {
         logger.info("Begin to query with selectId {} and all params {}", selectId, allParams);
         //take the all params break into 2 parts, one is the query params, the other is the control params
         this.queryParams = ParamUtil.getQueryParams(allParams);
         this.controlParams = ParamUtil.getControlParams(allParams);
 
-        if (! checkControlParams()) {
+        if (! checkControlParams(request)) {
             return RestResponseBuilder.fail(400, errorMsg);
         }
 
@@ -82,8 +84,13 @@ public class DBQueryController
      * check the control params is valid or not
      * @return true if valid, false if not
      */
-    private boolean checkControlParams()
+    private boolean checkControlParams(HttpServletRequest request)
     {
+        String clientIP = request.getRemoteAddr();
+        if (WHITE_IP_LIST.contains(clientIP)) {
+            logger.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
+            return true;
+        }
         // check _sign has exists
         String sign = controlParams.getOrDefault(SIGN, null);
         if (sign == null || sign.isEmpty()) {
