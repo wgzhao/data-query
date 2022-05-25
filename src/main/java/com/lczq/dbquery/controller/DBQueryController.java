@@ -7,6 +7,7 @@ import com.lczq.dbquery.param.RestResponseBuilder;
 import com.lczq.dbquery.service.DBQueryService;
 import com.lczq.dbquery.service.MyPair;
 import com.lczq.dbquery.service.SignService;
+import com.lczq.dbquery.util.HttpUtil;
 import com.lczq.dbquery.util.ParamUtil;
 import com.lczq.dbquery.util.SignUtil;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class DBQueryController
      */
     private boolean checkControlParams(HttpServletRequest request)
     {
-        String clientIP = request.getRemoteAddr();
+        String clientIP = HttpUtil.getClientIpAddr(request);
         logger.info("client come from {}", clientIP);
         if (WHITE_IP_LIST.contains(clientIP)) {
             logger.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
