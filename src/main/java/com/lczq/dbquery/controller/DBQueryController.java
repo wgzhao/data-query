@@ -87,6 +87,7 @@ public class DBQueryController
     private boolean checkControlParams(HttpServletRequest request)
     {
         String clientIP = request.getRemoteAddr();
+        logger.info("client come from {}", clientIP);
         if (WHITE_IP_LIST.contains(clientIP)) {
             logger.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
             return true;
