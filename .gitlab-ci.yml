@@ -57,7 +57,7 @@ build_app_only_test_branch:
   script:
     - echo "======== start package ========"
     - mvn versions:set -DnewVersion=test
-    - mvn $MAVEN_CLI_OPTS deploy -Ptest -DskipTests
+    - mvn $MAVEN_CLI_OPTS package -Ptest -DskipTests
   artifacts:
     paths:
       - target/*.jar
@@ -94,20 +94,9 @@ build_app_release_for_prod:
   environment: prod
   script:
     - echo "======== start package ========"
-    - mvn $MAVEN_CLI_OPTS clean deploy -Pprod -DskipTests
+    - mvn $MAVEN_CLI_OPTS clean package -Pprod -DskipTests
   tags:
     - prod
-  only:
-    - tags
-
-build_app_release_for_test:
-  stage: build
-  environment: test
-  script:
-    - echo "======== start package ========"
-    - mvn $MAVEN_CLI_OPTS clean deploy -Ptest -DskipTests
-  tags:
-    - test
   only:
     - tags
 
