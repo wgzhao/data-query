@@ -30,7 +30,7 @@ curl -X GET http://localhost:9090/dataquery/api/v1/query?selectId=xxxx&k1=v1&k2=
 - `appId`: `72f392f2e6a90e9a`
 - `appKey`: `70162f804fd30a7179b8ebded08e8dda`
 
-注： 该授权也是测试环境的通用授权信息，测试环境下，直接可使用该授权，不需要额外申请。 只有申请环境才需要。
+注： 该授权也是测试环境的通用授权信息，测试环境下，直接可使用该授权，不需要额外申请。 只有生产环境才需要。
 
 ### 查询签名
 
@@ -45,13 +45,51 @@ curl -X GET http://localhost:9090/dataquery/api/v1/query?selectId=xxxx&k1=v1&k2=
 如果是 Java 编程的话，实现逻辑如下：
 
 ```java
-Map<String, String> queryParams=new HashMap<>();
-        queryParams.put("name","allsql");
-        queryParams.put("col1","hello");
-        queryParams.put("selectId",selectId);
-        String str1=ParamUtil.sortedParams(queryParams)+appId+appKey;
-        System.out.println(str1);
-        String _sign=DigestUtils.md5DigestAsHex(str1.getBytes(StandardCharsets.UTF_8));
+public class TestSign {
+
+    private final String appId = "72f392f2e6a90e9a";
+    private final String appKey = "70162f804fd30a7179b8ebded08e8dda";
+
+    private final String validSign = "0fe35a85735c112dae68ced204850fe4";
+    private final String sortedParams = "m2=v2&n1=v1&selectId=q172f392f2e6a90e9a70162f804fd30a7179b8ebded08e8dda";
+
+    @Test
+    public void testSign()
+    {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("n1","v1");
+        queryParams.put("m2","v2");
+        queryParams.put("selectId","q1");
+        StringJoiner joiner = new StringJoiner("&");
+        queryParams.keySet().stream().sorted().forEach(key -> joiner.add(key + "=" + queryParams.get(key)));
+        String str1 = joiner.toString()+appId+appKey;
+        Assert.assertEquals(str1, sortedParams);
+        String _sign= DigestUtils.md5DigestAsHex(str1.getBytes(StandardCharsets.UTF_8));
+        Assert.assertEquals(_sign, validSign);
+    }
+}
+```
+
+如果是 Python 语言，实现逻辑如下：
+
+```python
+def test_sign():
+	
+	appId = "72f392f2e6a90e9a"
+	appKey = "70162f804fd30a7179b8ebded08e8dda"
+	validSign = "0fe35a85735c112dae68ced204850fe4"
+	sortedParams = "m2=v2&n1=v1&selectId=q172f392f2e6a90e9a70162f804fd30a7179b8ebded08e8dda"
+	
+	# passwed params
+	params = {'n1': 'v1', 'm2': 'v2', 'selectId': 'q1'}
+	# sorted params
+	sparmas = '&'.join([x + '=' + params[x] for x in sorted(params.keys(), key=lambda x: x.lower())]) + appId + appKey
+	
+	assert sparmas == sortedParams
+	
+	sign = hashlib.md5(sparmas.encode('utf-8')).hexdigest()
+	
+	assert sign == validSign
 ```
 
 ## 部署环境
