@@ -40,6 +40,9 @@ create table if not exists signs
 (
     app_id varchar(16)  not null comment 'app_id',
     app_key varchar(32) not null comment 'app_key',
+    applier varchar(20) DEFAULT NULL COMMENT '申请人', 
+    created_at datetime DEFAULT CURRENT_TIMESTAMP, 
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key (app_id)
 ) comment '签名表'
     ENGINE = InnoDB
