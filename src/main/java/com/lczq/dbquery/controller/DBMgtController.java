@@ -2,14 +2,19 @@ package com.lczq.dbquery.controller;
 
 import com.lczq.dbquery.entities.QueryConfig;
 import com.lczq.dbquery.entities.QueryParams;
+import com.lczq.dbquery.entities.SignEntity;
 import com.lczq.dbquery.mapper.QueryMapper;
 import com.lczq.dbquery.param.RestResponse;
+import com.lczq.dbquery.service.SignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +27,9 @@ public class DBMgtController
 
     @Autowired
     private QueryMapper queryMapper;
+
+    @Autowired
+    private SignService signService;
 
     @GetMapping("/queryconfig/{selectId}")
     public QueryConfig getQueryConfig(@PathVariable String selectId)
@@ -36,7 +44,7 @@ public class DBMgtController
     }
 
     @PostMapping(value="/queryconfig", consumes = "application/json")
-    public RestResponse saveQueryConfig(@RequestBody QueryConfig queryConfig)
+    public RestResponse<String> saveQueryConfig(@RequestBody QueryConfig queryConfig)
     {
         queryMapper.saveQueryConfig(queryConfig);
         return new RestResponse<>(200, "success");
@@ -44,7 +52,7 @@ public class DBMgtController
 
 
     @DeleteMapping("/queryconfig/{selectId}")
-    public RestResponse deleteQueryConfig(@PathVariable String selectId)
+    public RestResponse<String> deleteQueryConfig(@PathVariable String selectId)
     {
         queryMapper.deleteQueryConfig(selectId);
         queryMapper.deleteQueryParams(selectId);
@@ -58,7 +66,7 @@ public class DBMgtController
     }
 
     @PostMapping(value="/queryparams", consumes = "application/json")
-    public RestResponse saveQueryParams(@RequestBody List<QueryParams> queryParams)
+    public RestResponse<String> saveQueryParams(@RequestBody List<QueryParams> queryParams)
     {
         for( QueryParams qp: queryParams ) {
             queryMapper.saveQueryParams(qp);
@@ -67,10 +75,25 @@ public class DBMgtController
     }
 
     @DeleteMapping("/queryparams/{selectId}")
-    public RestResponse deleteQueryParams(@PathVariable String selectId)
+    public RestResponse<String> deleteQueryParams(@PathVariable String selectId)
     {
         queryMapper.deleteQueryParams(selectId);
         return new RestResponse<>(200, "success");
+    }
+
+    @PostMapping(value = "/gen_sign/{applier}", produces = "application/json;charset=UTF-8")
+    public SignEntity genSign(@PathVariable String applier, @RequestHeader MultiValueMap<String, String> headers)
+    {
+        if (headers.isEmpty() || ! headers.containsKey("secret")) {
+            return null;
+        }
+        if (! "lczq".equals(headers.getFirst("secret"))) {
+            return null;
+        }
+        if (null == applier || applier.isEmpty()) {
+            return null;
+        }
+        return signService.genSign(applier);
     }
 
 }

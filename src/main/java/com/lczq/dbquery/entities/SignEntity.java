@@ -4,6 +4,7 @@ public class SignEntity
 {
     private String appId;
     private String appKey;
+    private String applier;
 
     public String getAppId()
     {
@@ -28,5 +29,15 @@ public class SignEntity
     public String toString()
     {
         return this.appId + this.appKey;
+    }
+
+    public String getApplier()
+    {
+        return applier;
+    }
+
+    public void setApplier(String applier)
+    {
+        this.applier = applier;
     }
 }

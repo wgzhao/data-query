@@ -4,6 +4,7 @@ import com.lczq.dbquery.entities.DataSource;
 import com.lczq.dbquery.entities.QueryConfig;
 import com.lczq.dbquery.entities.QueryParams;
 import com.lczq.dbquery.entities.SignEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface QueryMapper
 
     void deleteQueryParams(String selectId);
 
+    @Async
+    void saveQuerySql(String appId, String select_id, String querySql);
 }

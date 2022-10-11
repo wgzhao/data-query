@@ -19,13 +19,14 @@ public class SignServiceImpl
         return queryMapper.querySignByAppId(appId);
     }
 
-    public SignEntity genSign()
+    public SignEntity genSign(String applier)
     {
         while (true){
             SignEntity signEntity = SignUtil.generateSign();
             if (queryMapper.querySignByAppId(signEntity.getAppId()) == null){
                 // no conflict
                 // save to db
+                signEntity.setApplier(applier);
                 queryMapper.saveSign(signEntity);
                 return signEntity;
             }

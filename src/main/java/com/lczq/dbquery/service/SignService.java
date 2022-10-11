@@ -6,5 +6,5 @@ public interface SignService
 {
     SignEntity querySign(String appId);
 
-    SignEntity genSign();
+    SignEntity genSign(String applier);
 }

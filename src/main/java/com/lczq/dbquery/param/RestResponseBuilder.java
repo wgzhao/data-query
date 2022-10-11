@@ -1,5 +1,7 @@
 package com.lczq.dbquery.param;
 
+import com.lczq.dbquery.entities.QueryResult;
+
 public class RestResponseBuilder
 {
     public static <T> RestResponse<T> of(Integer status, String message)
@@ -37,9 +39,10 @@ public class RestResponseBuilder
         return of(500, message);
     }
 
-    public static <T> RestResponse<T>  fail(int status, String message)
+    public static <T> RestResponse<T>  fail(Integer status, String message)
     {
-        return of(status, message);
+        return of(status, message, 0L , (T) new QueryResult());
     }
+
 
 }

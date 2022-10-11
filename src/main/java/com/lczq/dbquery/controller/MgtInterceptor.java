@@ -16,11 +16,4 @@ public class MgtInterceptor implements HandlerInterceptor
         }
         return true;
     }
-//        if (request.getSession().getAttribute("user") == null)
-//        {
-//            response.sendRedirect("/login");
-//            return false;
-//        }
-//        return true;
-//    }
 }
