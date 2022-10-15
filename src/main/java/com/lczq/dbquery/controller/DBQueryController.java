@@ -14,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,20 +56,22 @@ public class DBQueryController
     }
 
     @RequestMapping(value = "/query", produces = "application/json;charset=UTF-8")
-    public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams, HttpServletRequest request)
+    public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams,
+            HttpServletRequest request)
     {
+        MyPair<String, QueryResult> result;
         logger.info("Begin to query with selectId {} and all params {}", selectId, allParams);
         //take the all params break into 2 parts, one is the query params, the other is the control params
         this.queryParams = ParamUtil.getQueryParams(allParams);
         this.controlParams = ParamUtil.getControlParams(allParams);
 
-        if (! checkControlParams(request)) {
+        if (!checkControlParams(request)) {
             return RestResponseBuilder.fail(400, errorMsg);
         }
 
         // convert all query params key to lower case
         Map<String, String> lowerQueryParams = ParamUtil.lowercaseParams(queryParams);
-        MyPair<String, QueryResult> result = queryService.query(selectId, lowerQueryParams);
+        result = queryService.query(selectId, controlParams.get(APP_ID), lowerQueryParams);
         if (result.getSecond() == null || result.getSecond().getResult() == null) {
             return RestResponseBuilder.fail(400, result.getFirst());
         }
@@ -83,6 +82,7 @@ public class DBQueryController
 
     /**
      * check the control params is valid or not
+     *
      * @return true if valid, false if not
      */
     private boolean checkControlParams(HttpServletRequest request)
@@ -103,11 +103,12 @@ public class DBQueryController
         if (MAGIC_SIGN.equals(sign)) {
             // it's magic ,skip all validation
             final String[] activeProfiles = environment.getActiveProfiles();
-            if (! ( activeProfiles[0].equals("test") || activeProfiles[0].equals("dev"))) {
-               this.errorMsg =  "非法签名";
-               return false;
+            if (!(activeProfiles[0].equals("test") || activeProfiles[0].equals("dev"))) {
+                this.errorMsg = "非法签名";
+                return false;
             }
-        } else {
+        }
+        else {
             // check _appId is exists or not
             String appId = controlParams.getOrDefault(APP_ID, null);
             if (appId == null || appId.isEmpty()) {
@@ -128,17 +129,5 @@ public class DBQueryController
             }
         }
         return true;
-    }
-
-    @PutMapping(value = "/gen_sign", produces = "application/json;charset=UTF-8")
-    public SignEntity genSign(@RequestHeader MultiValueMap<String, String> headers)
-    {
-        if (headers.isEmpty() || ! headers.containsKey("secret")) {
-            return null;
-        }
-        if (! "lczq".equals(headers.getFirst("secret"))) {
-            return null;
-        }
-        return signService.genSign();
     }
 }

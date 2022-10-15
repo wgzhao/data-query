@@ -53,7 +53,7 @@
     </resultMap>
 
     <insert id="saveSign" parameterType="com.lczq.dbquery.entities.SignEntity">
-        INSERT INTO signs(app_id, app_key) VALUES(#{appId}, #{appKey})
+        INSERT INTO signs(app_id, app_key, applier) VALUES(#{appId}, #{appKey}, #{applier})
     </insert>
 
     <resultMap id="saveQueryConfigMap" type="com.lczq.dbquery.entities.QueryConfig">
@@ -84,5 +84,9 @@
         DELETE FROM query_params WHERE select_id = #{selectId}
     </delete>
 
+    <!-- logging execute sql statement for audit -->
+    <insert id="saveQuerySql" >
+        INSERT INTO query_logs(app_id, select_id, query_sql) VALUES(#{appId}, #{select_id}, #{querySql})
+    </insert>
 </mapper>
 

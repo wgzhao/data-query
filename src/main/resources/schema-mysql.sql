@@ -40,10 +40,21 @@ create table if not exists signs
 (
     app_id varchar(16)  not null comment 'app_id',
     app_key varchar(32) not null comment 'app_key',
-    applier varchar(20) DEFAULT NULL COMMENT '申请人', 
-    created_at datetime DEFAULT CURRENT_TIMESTAMP, 
+    applier varchar(20) DEFAULT NULL COMMENT '申请人',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key (app_id)
 ) comment '签名表'
     ENGINE = InnoDB
     DEFAULT CHARSET = latin1;
+
+create table if not exists query_logs
+(
+    app_id varchar(16) not null comment 'app_id',
+    select_id varchar(200) not null comment 'selectId',
+    query_sql mediumtext not null comment 'execute SQL statement',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) comment '查询日志表'
+    ENGINE = MYISAM
+    DEFAULT CHARSET = utf8;

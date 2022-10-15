@@ -42,7 +42,7 @@ public class DBQueryServiceImpl
     private CacheUtil cacheUtil;
 
     @Override
-    public MyPair<String, QueryResult> query(String selectId, Map<String, String> lowerQueryParams)
+    public MyPair<String, QueryResult> query(String selectId, String appId, Map<String, String> lowerQueryParams)
     {
         QueryConfig queryConfig = queryMapper.queryConfigBySelectId(selectId);
         if (queryConfig == null) {
@@ -82,6 +82,8 @@ public class DBQueryServiceImpl
         DataSource dataSource = queryMapper.queryDataSourceBySourceName(queryConfig.getDataSource());
         //fill back with real execute sql statement
         logger.info("execute sql is {}", executeSql);
+        //async save executed sql to db
+        queryMapper.saveQuerySql(appId, selectId, executeSql);
         queryConfig.setQuerySql(executeSql);
         QueryResult rsList;
         try {
