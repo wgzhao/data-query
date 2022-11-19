@@ -28,5 +28,6 @@ spring:
         max-wait: 5000
         min-idle: 0
 
-    host: redis.account-cancellation
+    host: redis.grp-arch
     port: 6379
+    password: redis@123 
