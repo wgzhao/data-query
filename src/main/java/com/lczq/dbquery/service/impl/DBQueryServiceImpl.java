@@ -45,6 +45,7 @@ public class DBQueryServiceImpl
     public MyPair<String, QueryResult> query(String selectId, String appId, Map<String, String> lowerQueryParams)
     {
         QueryConfig queryConfig = queryMapper.queryConfigBySelectId(selectId);
+        String redisKey = selectId + "_" + ParamUtil.crc32(lowerQueryParams);
         if (queryConfig == null) {
             logger.warn("The query selectId {} has not found", selectId);
             return new MyPair<>("查询ID " + selectId + " 不存在", null);
@@ -55,7 +56,6 @@ public class DBQueryServiceImpl
         }
         if (queryConfig.isEnableCache() && queryConfig.getCacheTime() > 0) {
             // try to get data from cache
-            String redisKey = ParamUtil.generateKey(lowerQueryParams);
             if (cacheUtil.exists(redisKey)) {
                 logger.info("The result has retrieved from cache with key: {}", redisKey);
                 return new MyPair<>("success", (QueryResult) cacheUtil.get(redisKey));
@@ -99,7 +99,7 @@ public class DBQueryServiceImpl
         else {
             // need write to cache or not ?
             if (queryConfig.isEnableCache()) {
-                cacheUtil.set(ParamUtil.generateKey(lowerQueryParams), rsList, queryConfig.getCacheTime());
+                cacheUtil.set(redisKey, rsList, queryConfig.getCacheTime());
             }
             return new MyPair<>("success", rsList);
         }
