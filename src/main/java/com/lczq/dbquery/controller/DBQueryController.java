@@ -66,6 +66,7 @@ public class DBQueryController
         this.controlParams = ParamUtil.getControlParams(allParams);
 
         if (!checkControlParams(request)) {
+            logger.error("Control params is invalid, error msg is {}", errorMsg);
             return RestResponseBuilder.fail(400, errorMsg);
         }
 
@@ -73,6 +74,7 @@ public class DBQueryController
         Map<String, String> lowerQueryParams = ParamUtil.lowercaseParams(queryParams);
         result = queryService.query(selectId, controlParams.get(APP_ID), lowerQueryParams);
         if (result.getSecond() == null || result.getSecond().getResult() == null) {
+            logger.error("Query failed, error msg is {}", result.getFirst());
             return RestResponseBuilder.fail(400, result.getFirst());
         }
         else {
