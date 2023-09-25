@@ -1,4 +1,4 @@
 include:
   project: 'grp-arch/sp-push'
   ref: master
-  file: 'argocd-maven-ci.yml'
+  file: 'argocd-maven-ci-new.yml'
