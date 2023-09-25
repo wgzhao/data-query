@@ -9,7 +9,6 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-
     <groupId>com.lczq</groupId>
     <artifactId>data-query</artifactId>
     <version>1.0.7-SNAPSHOT</version>
