@@ -1,0 +1,5 @@
+.vscode/
+.settings/
+.idea/
+target/
+*.log

@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+  sql:
+    init:
+      mode: NEVER
+      encoding: UTF-8
+      platform: mysql
+
+server:
+  port: 9090
+logging:
+  file:
+    path: logs/
+    name: application.log
+  logback:
+    rollingpolicy:
+      max-history: 7
