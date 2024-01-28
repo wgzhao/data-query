@@ -12,7 +12,6 @@ import lombok.Setter;
 @Table
 @Setter
 @Getter
-@Data
 public class QueryConfig extends BaseEntity
 {
     @Id

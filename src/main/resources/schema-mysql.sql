@@ -72,6 +72,8 @@ create table if not exists query_logs
 create table if not exists users(
 	username varchar(50) not null primary key,
 	password varchar(500) not null,
+    email   varchar(100) null ,
+    role varchar(20) not null default 'USER',
 	enabled boolean not null
 );
 
@@ -80,7 +82,7 @@ create table if not exists authorities (
 	authority varchar(50) not null,
 	constraint fk_authorities_users foreign key(username) references users(username)
 );
-create unique index if not exists ix_auth_username on authorities (username,authority);
+create unique index  ix_auth_username on authorities (username,authority);
 
 -- initial admin with password admin123
 

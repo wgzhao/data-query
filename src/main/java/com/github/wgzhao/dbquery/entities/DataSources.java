@@ -11,7 +11,6 @@ import lombok.Setter;
 @Table(name="data_sources")
 @Setter
 @Getter
-@Data
 public class DataSources extends BaseEntity
 {
     @Id

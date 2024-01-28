@@ -20,17 +20,12 @@ spring:
       # 数据库连接超时时间,默认30秒，即30000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-  redis:
-    database: 0
-    lettuce:
-      pool:
-        max-active: 8
-        max-wait: 5000
-        min-idle: 0
-
-    host: wgzhao-pc
-    port: 6379
-    password: redis@123
   sql:
     init:
       encoding: utf-8
+  data:
+    redis:
+      database: 0
+      host: wgzhao-pc
+      port: 6379
+      password: redis@123
