@@ -1,7 +1,7 @@
 package com.github.wgzhao.dbquery.controller;
 
 import com.github.wgzhao.dbquery.entities.QueryResult;
-import com.github.wgzhao.dbquery.entities.SignEntity;
+import com.github.wgzhao.dbquery.entities.Sign;
 import com.github.wgzhao.dbquery.param.RestResponse;
 import com.github.wgzhao.dbquery.param.RestResponseBuilder;
 import com.github.wgzhao.dbquery.service.DBQueryService;
@@ -118,14 +118,14 @@ public class DBQueryController
                 return false;
             }
 
-            SignEntity signEntity = signService.querySign(appId);
+            Sign signs = signService.querySign(appId);
 
-            if (signEntity == null || signEntity.getAppKey() == null) {
+            if (signs == null || signs.getAppKey() == null) {
                 this.errorMsg = "无效的 " + APP_ID;
                 return false;
             }
 
-            if (!SignUtil.validSign(sign, queryParams, signEntity)) {
+            if (!SignUtil.validSign(sign, queryParams, signs)) {
                 this.errorMsg = "无效签名";
                 return false;
             }

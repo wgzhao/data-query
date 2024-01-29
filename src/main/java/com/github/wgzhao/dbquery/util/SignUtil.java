@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.util;
 
-import com.github.wgzhao.dbquery.entities.SignEntity;
+import com.github.wgzhao.dbquery.entities.Sign;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -9,23 +9,23 @@ import java.util.Random;
 
 public class SignUtil
 {
-    public static SignEntity generateSign()
+    public static Sign generateSign()
     {
-        SignEntity signEntity = new SignEntity();
+        Sign sign = new Sign();
         byte[] array = new byte[32];
         new Random().nextBytes(array);
         String appId = DigestUtils.md5DigestAsHex(array).substring(0,16);
         new Random().nextBytes(array);
         String appKey = DigestUtils.md5DigestAsHex(array);
-        signEntity.setAppId(appId);
-        signEntity.setAppKey(appKey);
-        return signEntity;
+        sign.setAppId(appId);
+        sign.setAppKey(appKey);
+        return sign;
     }
 
-    public static boolean validSign(String sign, Map<String, String> queryParams, SignEntity signEntity)
+    public static boolean validSign(String sign, Map<String, String> queryParams, Sign signs)
     {
         // sort real params
-        String sb = ParamUtil.sortedParams(queryParams) + signEntity.toString();
+        String sb = ParamUtil.sortedParams(queryParams) + signs.toString();
         String validSign = DigestUtils.md5DigestAsHex(sb.getBytes(StandardCharsets.UTF_8));
         return validSign.equals(sign);
 

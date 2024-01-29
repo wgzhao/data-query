@@ -10,13 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name="signs")
 @Setter
 @Getter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignEntity
+public class Sign
 {
     @Id
     private String appId;

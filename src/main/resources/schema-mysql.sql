@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS `query_params`
 
 create table IF NOT EXISTS data_sources
 (
-    name     varchar(200) not null comment '数据源名称',
+    no      varchar(10)  not null  primary key comment '数据源编号',
+    name     varchar(200) null comment '数据源名称',
     url      varchar(200) not null comment '数据源URL,必须是jdbc:xxx://xxx:xxx/xxx',
-    username varchar(100) not null comment '数据源用户名',
+    username varchar(100) null comment '数据源用户名',
     password varchar(200) null comment '数据源密码，可以为空',
     driver   varchar(200) not null comment '驱动类名',
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
-    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (name)
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 create table if not exists signs

@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.service.impl;
 
-import com.github.wgzhao.dbquery.entities.SignEntity;
+import com.github.wgzhao.dbquery.entities.Sign;
 
 import com.github.wgzhao.dbquery.repo.SignRepo;
 import com.github.wgzhao.dbquery.service.SignService;
@@ -16,20 +16,20 @@ public class SignServiceImpl
     @Autowired
     private SignRepo signRepo;
 
-    public SignEntity querySign(String appId)
+    public Sign querySign(String appId)
     {
         return signRepo.findById(appId).orElse(null);
     }
 
-    public SignEntity genSign(String applier)
+    public Sign genSign(String applier)
     {
         while (true){
-            SignEntity signEntity = SignUtil.generateSign();
-            if (! signRepo.existsById(signEntity.getAppId())){
+            Sign sign = SignUtil.generateSign();
+            if (! signRepo.existsById(sign.getAppId())){
                 // no conflict
                 // save to db
-                signEntity.setApplier(applier);
-                return signRepo.save(signEntity);
+                sign.setApplier(applier);
+                return signRepo.save(sign);
             }
         }
     }

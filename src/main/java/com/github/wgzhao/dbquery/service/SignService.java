@@ -1,10 +1,10 @@
 package com.github.wgzhao.dbquery.service;
 
-import com.github.wgzhao.dbquery.entities.SignEntity;
+import com.github.wgzhao.dbquery.entities.Sign;
 
 public interface SignService
 {
-    SignEntity querySign(String appId);
+    Sign querySign(String appId);
 
-    SignEntity genSign(String applier);
+    Sign genSign(String applier);
 }

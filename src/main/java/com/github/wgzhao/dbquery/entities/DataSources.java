@@ -13,7 +13,10 @@ import lombok.Setter;
 @Getter
 public class DataSources extends BaseEntity
 {
+
     @Id
+    private String no;
+
     private String name;
 
     private String url;
@@ -23,4 +26,11 @@ public class DataSources extends BaseEntity
     private String password;
 
     private String driver;
+
+    @Override
+    public String toString() {
+        return String.format(" url: %s, \t" +
+                " username: %s, \t" +
+                " password: %s, \t",url, username, password);
+    }
 }
