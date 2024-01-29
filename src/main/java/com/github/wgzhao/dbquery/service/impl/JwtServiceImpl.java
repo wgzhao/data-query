@@ -1,22 +1,29 @@
 package com.github.wgzhao.dbquery.service.impl;
 
+import com.github.wgzhao.dbquery.dto.AuthenticationRequest;
+import com.github.wgzhao.dbquery.dto.AuthenticationResponse;
 import com.github.wgzhao.dbquery.entities.User;
+import com.github.wgzhao.dbquery.repo.UserRepo;
 import com.github.wgzhao.dbquery.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -39,10 +46,14 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.expiration.enable-account}")
     private int enableAccountTokenExpiration;
 
+    @Autowired
+    private final UserRepo userRepo;
+
 
     private final SecretKey key;
 
-    public JwtServiceImpl(@Value("${jwt.secret}") String secret) {
+    public JwtServiceImpl(@Value("${jwt.secret}") String secret, UserRepo userRepo) {
+        this.userRepo = userRepo;
         this.secret = secret;
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
@@ -110,5 +121,60 @@ public class JwtServiceImpl implements JwtService {
                 .build()
                 .parseSignedClaims(jwtToken)
                 .getPayload();
+    }
+
+    @Override
+    public AuthenticationResponse login(AuthenticationRequest request) {
+        User user = userRepo.findByUsername(request.getUsername())
+                .orElseThrow();
+        // md5 passwd password
+
+        String encryptPasswd = DigestUtils.md5DigestAsHex(request.getPassword().getBytes());
+        if (encryptPasswd.equals(user.getPassword())) {
+            // create a token
+            return new AuthenticationResponse(createToken(user));
+        } else {
+            log.error("username or password not match");
+            log.error("the expected password is {}, but the password is {}", user.getPassword(), encryptPasswd);
+            return null;
+        }
+
+    }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String jwToken = resolveToken(request);
+        // set the token to expire
+        if (jwToken != null) {
+            Claims claims = extractAllClaims(jwToken);
+            Date now = new Date();
+            Date expiryDate = new Date(now.getTime() - 1000);
+            Jwts.builder()
+                    .subject(claims.getSubject())
+                    .issuedAt(new Date())
+                    .expiration(expiryDate)
+                    .signWith(key)
+                    .compact();
+        }
+    }
+
+    @Override
+    public User register(User request) {
+        return null;
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String jwtToken = resolveToken(request);
+        if (validateToken(jwtToken)) {
+            String username = getUsername(jwtToken);
+            User user = userRepo.findByUsername(username).orElseThrow();
+            String newToken = createToken(user);
+            response.setHeader("Authorization", newToken);
+            return new AuthenticationResponse(newToken);
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return null;
+        }
     }
 }
