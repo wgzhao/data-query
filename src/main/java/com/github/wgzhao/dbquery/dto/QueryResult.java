@@ -1,4 +1,4 @@
-package com.github.wgzhao.dbquery.entities;
+package com.github.wgzhao.dbquery.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

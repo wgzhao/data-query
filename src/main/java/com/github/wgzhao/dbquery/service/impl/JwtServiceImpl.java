@@ -132,7 +132,7 @@ public class JwtServiceImpl implements JwtService {
         String encryptPasswd = DigestUtils.md5DigestAsHex(request.getPassword().getBytes());
         if (encryptPasswd.equals(user.getPassword())) {
             // create a token
-            return new AuthenticationResponse(createToken(user));
+            return new AuthenticationResponse(createToken(user), user.getRole());
         } else {
             log.error("username or password not match");
             log.error("the expected password is {}, but the password is {}", user.getPassword(), encryptPasswd);
@@ -171,7 +171,7 @@ public class JwtServiceImpl implements JwtService {
             User user = userRepo.findByUsername(username).orElseThrow();
             String newToken = createToken(user);
             response.setHeader("Authorization", newToken);
-            return new AuthenticationResponse(newToken);
+            return new AuthenticationResponse(newToken, user.getRole());
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return null;

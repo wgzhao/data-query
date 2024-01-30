@@ -1,7 +1,7 @@
 package com.github.wgzhao.dbquery.service;
 
 import com.github.wgzhao.dbquery.entities.DataSources;
-import com.github.wgzhao.dbquery.entities.QueryResult;
+import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
 import org.springframework.stereotype.Service;
 

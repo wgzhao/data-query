@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.controller;
 
-import com.github.wgzhao.dbquery.entities.CommResponse;
+import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.util.DbUtil;

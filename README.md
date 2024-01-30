@@ -56,12 +56,12 @@ public class TestSign {
     @Test
     public void testSign()
     {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("n1","v1");
-        queryParams.put("m2","v2");
-        queryParams.put("selectId","q1");
+        Map<String, String> queryParam = new HashMap<>();
+        queryParam.put("n1","v1");
+        queryParam.put("m2","v2");
+        queryParam.put("selectId","q1");
         StringJoiner joiner = new StringJoiner("&");
-        queryParams.keySet().stream().sorted().forEach(key -> joiner.add(key + "=" + queryParams.get(key)));
+        queryParam.keySet().stream().sorted().forEach(key -> joiner.add(key + "=" + queryParam.get(key)));
         String str1 = joiner.toString()+appId+appKey;
         Assert.assertEquals(str1, sortedParams);
         String _sign= DigestUtils.md5DigestAsHex(str1.getBytes(StandardCharsets.UTF_8));

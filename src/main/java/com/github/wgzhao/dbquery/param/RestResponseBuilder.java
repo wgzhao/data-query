@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.param;
 
-import com.github.wgzhao.dbquery.entities.QueryResult;
+import com.github.wgzhao.dbquery.dto.QueryResult;
 
 public class RestResponseBuilder
 {

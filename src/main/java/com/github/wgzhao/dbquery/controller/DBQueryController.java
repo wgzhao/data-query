@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.controller;
 
-import com.github.wgzhao.dbquery.entities.QueryResult;
+import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.entities.Sign;
 import com.github.wgzhao.dbquery.param.RestResponse;
 import com.github.wgzhao.dbquery.param.RestResponseBuilder;

@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Data
-@IdClass(QueryParams.Pk.class)
-public class QueryParams
+@IdClass(QueryParam.Pk.class)
+public class QueryParam
 {
     @Id
     private String selectId;

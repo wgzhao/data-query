@@ -3,8 +3,8 @@ package com.github.wgzhao.dbquery.service.impl;
 import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
 import com.github.wgzhao.dbquery.entities.QueryLogs;
-import com.github.wgzhao.dbquery.entities.QueryParams;
-import com.github.wgzhao.dbquery.entities.QueryResult;
+import com.github.wgzhao.dbquery.entities.QueryParam;
+import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryLogsRepo;
@@ -74,15 +74,15 @@ public class DBQueryServiceImpl
                 return new MyPair<>("success", (QueryResult) cacheUtil.get(redisKey));
             }
         }
-        List<QueryParams> queryParamsList = queryParamsRepo.findBySelectId(selectId);
+        List<QueryParam> queryParamList = queryParamsRepo.findBySelectId(selectId);
         Map<String, String> valuesMap = new HashMap<>();
         // 所有写入 query_params 表的参数都是必选参数，其他从 SQL 语句提取出来的参数为可选参数，同时 allParams 中的 key 也是小写
-        for (QueryParams queryParams : queryParamsList) {
+        for (QueryParam queryParam : queryParamList) {
             // query_params 表中的参数名在写入时已经变成小写
-            if (! lowerQueryParams.containsKey(queryParams.getParamName())) {
-                return new MyPair<>("参数 " + queryParams.getParamName() + " 不存在", null);
+            if (! lowerQueryParams.containsKey(queryParam.getParamName())) {
+                return new MyPair<>("参数 " + queryParam.getParamName() + " 不存在", null);
             }
-            valuesMap.put(queryParams.getParamName(), lowerQueryParams.get(queryParams.getParamName()));
+            valuesMap.put(queryParam.getParamName(), lowerQueryParams.get(queryParam.getParamName()));
         }
         // 提取 SQL 语句中的参数，参数是 ${xxx} 形式
         List<String> otherParams = getParamNames(queryConfig.getQuerySql());

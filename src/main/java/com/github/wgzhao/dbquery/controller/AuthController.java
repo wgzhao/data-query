@@ -2,7 +2,7 @@ package com.github.wgzhao.dbquery.controller;
 
 import com.github.wgzhao.dbquery.dto.AuthenticationRequest;
 import com.github.wgzhao.dbquery.dto.AuthenticationResponse;
-import com.github.wgzhao.dbquery.entities.CommResponse;
+import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

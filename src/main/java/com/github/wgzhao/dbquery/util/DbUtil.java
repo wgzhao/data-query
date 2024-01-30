@@ -1,8 +1,8 @@
 package com.github.wgzhao.dbquery.util;
 
-import com.github.wgzhao.dbquery.entities.CommResponse;
+import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.entities.DataSources;
-import com.github.wgzhao.dbquery.entities.DatabaseType;
+import com.github.wgzhao.dbquery.dto.DatabaseType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;

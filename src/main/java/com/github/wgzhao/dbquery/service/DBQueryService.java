@@ -1,6 +1,6 @@
 package com.github.wgzhao.dbquery.service;
 
-import com.github.wgzhao.dbquery.entities.QueryResult;
+import com.github.wgzhao.dbquery.dto.QueryResult;
 
 import java.util.Map;
 
