@@ -1,6 +1,9 @@
 package com.github.wgzhao.dbquery.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,7 +12,13 @@ import java.util.Date;
 public class BaseEntity implements Serializable {
 	
     private static final long serialVersionUID = 1L;
-	private Date createdAt;
+
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
     public Date getCreatedAt() {

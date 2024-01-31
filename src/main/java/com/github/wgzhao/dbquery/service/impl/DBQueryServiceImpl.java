@@ -8,7 +8,7 @@ import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryLogsRepo;
-import com.github.wgzhao.dbquery.repo.QueryParamsRepo;
+import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import com.github.wgzhao.dbquery.service.ConnectionDB;
 import com.github.wgzhao.dbquery.service.MyPair;
 import com.github.wgzhao.dbquery.service.DBQueryService;
@@ -42,7 +42,7 @@ public class DBQueryServiceImpl
     private QueryConfigRepo queryConfigRepo;
 
     @Autowired
-    private QueryParamsRepo queryParamsRepo;
+    private QueryParamRepo queryParamsRepo;
 
     @Autowired
     private QueryLogsRepo queryLogsRepo;

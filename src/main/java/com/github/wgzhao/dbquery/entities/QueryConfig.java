@@ -32,8 +32,4 @@ public class QueryConfig extends BaseEntity
     private boolean isEnable;
 
     private boolean enableCache;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "selectId")
-    private List<QueryParam> queryParams;
 }

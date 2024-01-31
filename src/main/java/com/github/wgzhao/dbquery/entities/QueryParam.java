@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name = "query_params")
 @Setter
 @Getter
 @Data
@@ -27,34 +27,13 @@ public class QueryParam
     @Id
     private String paramType;
 
+    @Setter
+    @Getter
     @Embeddable
-    public class Pk {
+    public static class Pk {
         private String selectId;
         private String paramName;
         private String paramType;
 
-        public String getSelectId() {
-            return selectId;
-        }
-
-        public void setSelectId(String selectId) {
-            this.selectId = selectId;
-        }
-
-        public String getParamName() {
-            return paramName;
-        }
-
-        public void setParamName(String paramName) {
-            this.paramName = paramName;
-        }
-
-        public String getParamType() {
-            return paramType;
-        }
-
-        public void setParamType(String paramType) {
-            this.paramType = paramType;
-        }
     }
 }

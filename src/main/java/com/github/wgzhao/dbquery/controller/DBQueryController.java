@@ -11,8 +11,7 @@ import com.github.wgzhao.dbquery.util.HttpUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import com.github.wgzhao.dbquery.util.SignUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,11 +29,10 @@ import static com.github.wgzhao.dbquery.constant.Constants.WHITE_IP_LIST;
 
 @RestController
 @RequestMapping(value = "/api/v1")
+@Slf4j
 public class DBQueryController
 {
-
-    private static final Logger logger = LoggerFactory.getLogger(DBQueryController.class);
-
+    
     @Autowired
     private DBQueryService queryService;
 
@@ -60,13 +58,13 @@ public class DBQueryController
             HttpServletRequest request)
     {
         MyPair<String, QueryResult> result;
-        logger.info("Begin to query with selectId {} and all params {}", selectId, allParams);
+        log.info("Begin to query with selectId {} and all params {}", selectId, allParams);
         //take the all params break into 2 parts, one is the query params, the other is the control params
         this.queryParams = ParamUtil.getQueryParams(allParams);
         this.controlParams = ParamUtil.getControlParams(allParams);
 
         if (!checkControlParams(request)) {
-            logger.error("Control params is invalid, error msg is {}", errorMsg);
+            log.error("Control params is invalid, error msg is {}", errorMsg);
             return RestResponseBuilder.fail(400, errorMsg);
         }
 
@@ -74,7 +72,7 @@ public class DBQueryController
         Map<String, String> lowerQueryParams = ParamUtil.lowercaseParams(queryParams);
         result = queryService.query(selectId, controlParams.get(APP_ID), lowerQueryParams);
         if (result.getSecond() == null || result.getSecond().getResult() == null) {
-            logger.error("Query failed, error msg is {}", result.getFirst());
+            log.error("Query failed, error msg is {}", result.getFirst());
             return RestResponseBuilder.fail(400, result.getFirst());
         }
         else {
@@ -90,9 +88,9 @@ public class DBQueryController
     private boolean checkControlParams(HttpServletRequest request)
     {
         String clientIP = HttpUtil.getClientIpAddr(request);
-        logger.info("client come from {}", clientIP);
+        log.info("client come from {}", clientIP);
         if (WHITE_IP_LIST.contains(clientIP)) {
-            logger.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
+            log.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
             return true;
         }
         // check _sign has exists
@@ -111,7 +109,7 @@ public class DBQueryController
             }
         }
         else {
-            // check _appId is exists or not
+            // check _appId is existing or not
             String appId = controlParams.getOrDefault(APP_ID, null);
             if (appId == null || appId.isEmpty()) {
                 this.errorMsg = "缺少必要的参数 " + APP_ID;
