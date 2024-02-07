@@ -9,6 +9,7 @@ import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,11 @@ public class QueryConfigController {
         return queryConfigRepo.findAll();
     }
 
+    @GetMapping("/{id}")
+    public QueryConfig get(@PathVariable("id") String id) {
+        return queryConfigRepo.findById(id).orElse(null);
+    }
+
     @GetMapping("/datasources")
     public Collection<DbSourceDto> listDataSources() {
         return dataSourceRepo.findNoAndName();
@@ -48,7 +54,7 @@ public class QueryConfigController {
     }
 
     @GetMapping("/params/{selectId}")
-    public List<QueryParam> listParams(String selectId) {
+    public List<QueryParam> listParams(@PathVariable("selectId") String selectId) {
         return queryParamsRepo.findBySelectId(selectId);
     }
 
