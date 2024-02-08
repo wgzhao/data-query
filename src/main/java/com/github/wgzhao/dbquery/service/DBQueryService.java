@@ -1,7 +1,10 @@
 package com.github.wgzhao.dbquery.service;
 
 import com.github.wgzhao.dbquery.dto.QueryResult;
+import com.github.wgzhao.dbquery.errors.ParamException;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public interface DBQueryService
@@ -15,5 +18,5 @@ public interface DBQueryService
      * @param lowerQueryParams {@link Map} url 上传递的参数，其中 key 已经转为小写
      * @return {@link MyPair} 查询结果
      */
-    MyPair<String, QueryResult> query(String selectId, String appId, Map<String, String> lowerQueryParams);
+    List<Map<String, Object>> query(String selectId, String appId, Map<String, String> lowerQueryParams) throws ClassNotFoundException, SQLException,RuntimeException;
 }

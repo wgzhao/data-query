@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://node11:13302/data_query?allowPublicKeyRetrieval=yes&allowMultiQueries=true&useSSL=false&tinyInt1isBit=false&serverTimezone=GMT%2B8
-    username: root
-    password: gp51@2022
+    url: jdbc:mysql://wgzhao-pc:3306/data_query?allowPublicKeyRetrieval=yes&allowMultiQueries=true&useSSL=false&tinyInt1isBit=false&serverTimezone=GMT%2B8
+    username: dbquery
+    password: dbquery@123
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:

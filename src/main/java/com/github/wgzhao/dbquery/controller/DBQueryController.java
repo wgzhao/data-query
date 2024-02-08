@@ -2,15 +2,14 @@ package com.github.wgzhao.dbquery.controller;
 
 import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.entities.Sign;
-import com.github.wgzhao.dbquery.param.RestResponse;
-import com.github.wgzhao.dbquery.param.RestResponseBuilder;
+import com.github.wgzhao.dbquery.errors.ParamException;
 import com.github.wgzhao.dbquery.service.DBQueryService;
-import com.github.wgzhao.dbquery.service.MyPair;
 import com.github.wgzhao.dbquery.service.SignService;
 import com.github.wgzhao.dbquery.util.HttpUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import com.github.wgzhao.dbquery.util.SignUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -19,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static com.github.wgzhao.dbquery.constant.Constants.APP_ID;
@@ -30,9 +30,8 @@ import static com.github.wgzhao.dbquery.constant.Constants.WHITE_IP_LIST;
 @RestController
 @RequestMapping(value = "/api/v1")
 @Slf4j
-public class DBQueryController
-{
-    
+public class DBQueryController {
+
     @Autowired
     private DBQueryService queryService;
 
@@ -48,16 +47,14 @@ public class DBQueryController
     private String errorMsg;
 
     @GetMapping("/")
-    public String index()
-    {
+    public String index() {
         return "Hello, World!";
     }
 
     @RequestMapping(value = "/query", produces = "application/json;charset=UTF-8")
-    public RestResponse executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams,
-            HttpServletRequest request)
-    {
-        MyPair<String, QueryResult> result;
+    public QueryResult executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams,
+                                    HttpServletRequest request, HttpServletResponse response) {
+
         log.info("Begin to query with selectId {} and all params {}", selectId, allParams);
         //take the all params break into 2 parts, one is the query params, the other is the control params
         this.queryParams = ParamUtil.getQueryParams(allParams);
@@ -65,18 +62,29 @@ public class DBQueryController
 
         if (!checkControlParams(request)) {
             log.error("Control params is invalid, error msg is {}", errorMsg);
-            return RestResponseBuilder.fail(400, errorMsg);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return new QueryResult(errorMsg);
         }
 
         // convert all query params key to lower case
         Map<String, String> lowerQueryParams = ParamUtil.lowercaseParams(queryParams);
-        result = queryService.query(selectId, controlParams.get(APP_ID), lowerQueryParams);
-        if (result.getSecond() == null || result.getSecond().getResult() == null) {
-            log.error("Query failed, error msg is {}", result.getFirst());
-            return RestResponseBuilder.fail(400, result.getFirst());
-        }
-        else {
-            return RestResponseBuilder.succ((long) result.getSecond().getResult().size(), result.getSecond());
+        try {
+            QueryResult queryResult = new QueryResult();
+            List<Map<String, Object>> result = queryService.query(selectId, controlParams.get(APP_ID), lowerQueryParams);
+            queryResult.setStatus(200);
+            queryResult.setSuccess(true);
+            queryResult.setMessage("success");
+            queryResult.setTotal(result.size());
+            queryResult.setData(Map.of("result", result));
+            return queryResult;
+        } catch (ParamException e) {
+            log.error("Query failed, error msg is {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return new QueryResult(e.getMessage());
+        } catch (ClassNotFoundException | SQLException | RuntimeException e) {
+            log.error("Query failed, error msg is {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return new QueryResult(e.getMessage());
         }
     }
 
@@ -85,8 +93,7 @@ public class DBQueryController
      *
      * @return true if valid, false if not
      */
-    private boolean checkControlParams(HttpServletRequest request)
-    {
+    private boolean checkControlParams(HttpServletRequest request) {
         String clientIP = HttpUtil.getClientIpAddr(request);
         log.info("client come from {}", clientIP);
         if (WHITE_IP_LIST.contains(clientIP)) {
@@ -107,8 +114,7 @@ public class DBQueryController
                 this.errorMsg = "非法签名";
                 return false;
             }
-        }
-        else {
+        } else {
             // check _appId is existing or not
             String appId = controlParams.getOrDefault(APP_ID, null);
             if (appId == null || appId.isEmpty()) {

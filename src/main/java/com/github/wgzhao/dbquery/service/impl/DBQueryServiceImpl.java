@@ -5,6 +5,7 @@ import com.github.wgzhao.dbquery.entities.QueryConfig;
 import com.github.wgzhao.dbquery.entities.QueryLog;
 import com.github.wgzhao.dbquery.entities.QueryParam;
 import com.github.wgzhao.dbquery.dto.QueryResult;
+import com.github.wgzhao.dbquery.errors.ParamException;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryLogRepo;
@@ -16,11 +17,14 @@ import com.github.wgzhao.dbquery.util.CacheUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.text.StringSubstitutor;
+import org.hibernate.QueryParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,23 +59,23 @@ public class DBQueryServiceImpl
 
 
     @Override
-    public MyPair<String, QueryResult> query(String selectId, String appId, Map<String, String> lowerQueryParams)
-    {
-        QueryConfig queryConfig =  queryConfigRepo.findById(selectId).orElse(null);
+    public List<Map<String, Object>> query(String selectId, String appId, Map<String, String> lowerQueryParams) {
+        QueryConfig queryConfig = queryConfigRepo.findById(selectId).orElse(null);
         String redisKey = selectId + "_" + ParamUtil.crc32(lowerQueryParams);
+//        QueryResult queryResult = new QueryResult();
         if (queryConfig == null) {
             logger.warn("The query selectId {} has not found", selectId);
-            return new MyPair<>("查询ID " + selectId + " 不存在", null);
+            throw new ParamException("查询ID " + selectId + " 不存在");
         }
-        if (! queryConfig.isEnable()) {
+        if (!queryConfig.isEnable()) {
             logger.warn("The query selectId {} has be disabled", selectId);
-            return new MyPair<>("查询ID " + selectId + " 被禁用", null);
+            throw new ParamException("查询ID " + selectId + " 被禁用");
         }
         if (queryConfig.isEnableCache() && queryConfig.getCacheTime() > 0) {
             // try to get data from cache
             if (cacheUtil.exists(redisKey)) {
                 logger.info("The result has retrieved from cache with key: {}", redisKey);
-                return new MyPair<>("success", (QueryResult) cacheUtil.get(redisKey));
+                return (List<Map<String, Object>>) cacheUtil.get(redisKey);
             }
         }
         List<QueryParam> queryParamList = queryParamsRepo.findBySelectId(selectId);
@@ -79,8 +83,9 @@ public class DBQueryServiceImpl
         // 所有写入 query_params 表的参数都是必选参数，其他从 SQL 语句提取出来的参数为可选参数，同时 allParams 中的 key 也是小写
         for (QueryParam queryParam : queryParamList) {
             // query_params 表中的参数名在写入时已经变成小写
-            if (! lowerQueryParams.containsKey(queryParam.getParamName())) {
-                return new MyPair<>("参数 " + queryParam.getParamName() + " 不存在", null);
+            if (!lowerQueryParams.containsKey(queryParam.getParamName())) {
+                logger.warn("The query param {} has not found", queryParam.getParamName());
+                throw new ParamException("参数 " + queryParam.getParamName() + " 不存在");
             }
             valuesMap.put(queryParam.getParamName(), lowerQueryParams.get(queryParam.getParamName()));
         }
@@ -98,23 +103,21 @@ public class DBQueryServiceImpl
         //async save executed sql to db
         queryLogRepo.save(new QueryLog(0, appId, selectId, executeSql));
         queryConfig.setQuerySql(executeSql);
-        QueryResult rsList;
         try {
-            rsList = connectionDB.executeSQL(queryConfig, dataSource);
-        }
-        catch (Exception e) {
-            logger.error("The query with selectId {} has failure: {}", selectId, e);
-            return new MyPair<>("查询失败，请查看服务日志", null);
-        }
-        if (rsList == null || rsList.getResult() == null) {
-            return new MyPair<>("未知异常", null);
-        }
-        else {
-            // need write to cache or not ?
+            List<Map<String, Object>> rsList = connectionDB.executeSQL(queryConfig, dataSource);
             if (queryConfig.isEnableCache()) {
-                cacheUtil.set(redisKey, rsList, queryConfig.getCacheTime());
+                cacheUtil.set(redisKey, (Serializable) rsList, queryConfig.getCacheTime());
             }
-            return new MyPair<>("success", rsList);
+            return rsList;
+        } catch (ClassNotFoundException e) {
+            logger.error("The query with selectId {} has failure: {}", selectId, e);
+            throw new RuntimeException("查询失败: " + e.getMessage());
+        } catch (SQLException e) {
+            logger.error("The query with selectId {} has failure: {}", selectId, e);
+            throw new RuntimeException("查询的 SQL语句异常: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("The query with selectId {} has failure: {}", selectId, e);
+            throw new RuntimeException("查询失败: " + e.getMessage());
         }
     }
 

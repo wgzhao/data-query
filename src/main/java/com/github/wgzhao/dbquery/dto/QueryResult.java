@@ -1,28 +1,39 @@
 package com.github.wgzhao.dbquery.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QueryResult implements Serializable
-{
-    private static final long serialVersionUID = 5237730257103305078L;
+@Data
+@AllArgsConstructor
+public class QueryResult implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 691617930352197222L;
 
-    private List<Map<String, Object>> result = new ArrayList<>();
+    private final String apiVersion = "1.0";
+    private int status;
+    private boolean success;
+    private String message;
+    private int total;
+    private Map<String, Object> data;
 
-    public List<Map<String, Object>> getResult()
-    {
-        return result;
+    public QueryResult() {
+        this.status = 400;
+        this.success = false;
+        this.data = Map.of("result", new ArrayList<>());
     }
 
-    public void setResult(List<Map<String, Object>> result)
-    {
-        this.result = result;
-    }
-
-    public void setOneMap(Map<String, Object> map)
-    {
-        this.result.add(map);
+    public QueryResult(String message) {
+        this.status = 400;
+        this.success = false;
+        this.message = message;
+        this.data = Map.of("result", new ArrayList<>());
     }
 }
