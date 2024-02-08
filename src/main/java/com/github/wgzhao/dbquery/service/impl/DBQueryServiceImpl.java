@@ -4,20 +4,17 @@ import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
 import com.github.wgzhao.dbquery.entities.QueryLog;
 import com.github.wgzhao.dbquery.entities.QueryParam;
-import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.errors.ParamException;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryLogRepo;
 import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import com.github.wgzhao.dbquery.service.ConnectionDB;
-import com.github.wgzhao.dbquery.service.MyPair;
 import com.github.wgzhao.dbquery.service.DBQueryService;
 import com.github.wgzhao.dbquery.util.CacheUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.text.StringSubstitutor;
-import org.hibernate.QueryParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +31,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class DBQueryServiceImpl
-        implements DBQueryService
-{
+        implements DBQueryService {
 
     Logger logger = LoggerFactory.getLogger(DBQueryServiceImpl.class);
 
@@ -109,20 +105,16 @@ public class DBQueryServiceImpl
                 cacheUtil.set(redisKey, (Serializable) rsList, queryConfig.getCacheTime());
             }
             return rsList;
-        } catch (ClassNotFoundException e) {
-            logger.error("The query with selectId {} has failure: {}", selectId, e);
-            throw new RuntimeException("查询失败: " + e.getMessage());
         } catch (SQLException e) {
-            logger.error("The query with selectId {} has failure: {}", selectId, e);
+            logger.error("The query with selectId {} has failure: {}", selectId, e.getMessage());
             throw new RuntimeException("查询的 SQL语句异常: " + e.getMessage());
         } catch (Exception e) {
-            logger.error("The query with selectId {} has failure: {}", selectId, e);
+            logger.error("The query with selectId {} has failure: {}", selectId, e.getMessage());
             throw new RuntimeException("查询失败: " + e.getMessage());
         }
     }
 
-    private List<String> getParamNames(String sql)
-    {
+    private List<String> getParamNames(String sql) {
         List<String> result = new ArrayList<>();
         // all variable define are formed alphabetic, digits, underscore.
         String regex = "\\$\\{(?<name>\\w+?)\\}";

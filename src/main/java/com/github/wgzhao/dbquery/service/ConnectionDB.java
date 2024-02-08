@@ -1,7 +1,6 @@
 package com.github.wgzhao.dbquery.service;
 
 import com.github.wgzhao.dbquery.entities.DataSources;
-import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ConnectionDB
-{
+public class ConnectionDB {
 
     public List<Map<String, Object>> executeSQL(QueryConfig queryConfig, DataSources dataSource)
-            throws ClassNotFoundException, SQLException
-    {
+            throws ClassNotFoundException, SQLException {
         String dbUrl = dataSource.getUrl();
         String user = dataSource.getUsername();
         String pass = dataSource.getPassword();
