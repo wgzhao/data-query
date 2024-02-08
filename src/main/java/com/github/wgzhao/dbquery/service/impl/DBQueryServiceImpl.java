@@ -2,12 +2,12 @@ package com.github.wgzhao.dbquery.service.impl;
 
 import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
-import com.github.wgzhao.dbquery.entities.QueryLogs;
+import com.github.wgzhao.dbquery.entities.QueryLog;
 import com.github.wgzhao.dbquery.entities.QueryParam;
 import com.github.wgzhao.dbquery.dto.QueryResult;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
-import com.github.wgzhao.dbquery.repo.QueryLogsRepo;
+import com.github.wgzhao.dbquery.repo.QueryLogRepo;
 import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import com.github.wgzhao.dbquery.service.ConnectionDB;
 import com.github.wgzhao.dbquery.service.MyPair;
@@ -45,7 +45,7 @@ public class DBQueryServiceImpl
     private QueryParamRepo queryParamsRepo;
 
     @Autowired
-    private QueryLogsRepo queryLogsRepo;
+    private QueryLogRepo queryLogRepo;
 
     @Autowired
     private ConnectionDB connectionDB;
@@ -96,7 +96,7 @@ public class DBQueryServiceImpl
         //fill back with real execute sql statement
         logger.info("execute sql is {}", executeSql);
         //async save executed sql to db
-        queryLogsRepo.save(new QueryLogs(0, appId, selectId, executeSql));
+        queryLogRepo.save(new QueryLog(0, appId, selectId, executeSql));
         queryConfig.setQuerySql(executeSql);
         QueryResult rsList;
         try {

@@ -1,5 +1,6 @@
 package com.github.wgzhao.dbquery.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
@@ -15,10 +16,12 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;
 
     @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updatedAt;
 
     public Date getCreatedAt() {
