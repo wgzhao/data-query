@@ -1,4 +1,4 @@
-package com.github.wgzhao.dbquery.controller;
+package com.github.wgzhao.dbquery.controller.admin;
 
 import com.github.wgzhao.dbquery.dto.DbSourceDto;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/queryconfig")
+@RequestMapping("/admin/api/v1/queryconfig")
 public class QueryConfigController {
 
     @Autowired

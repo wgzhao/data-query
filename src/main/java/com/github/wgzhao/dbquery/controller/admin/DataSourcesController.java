@@ -1,4 +1,4 @@
-package com.github.wgzhao.dbquery.controller;
+package com.github.wgzhao.dbquery.controller.admin;
 
 import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.entities.DataSources;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/datasources")
+@RequestMapping("/admin/api/v1/datasources")
 @RequiredArgsConstructor
 @CrossOrigin
 public class DataSourcesController {

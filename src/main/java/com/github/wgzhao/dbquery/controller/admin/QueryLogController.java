@@ -1,4 +1,4 @@
-package com.github.wgzhao.dbquery.controller;
+package com.github.wgzhao.dbquery.controller.admin;
 
 import com.github.wgzhao.dbquery.entities.QueryLog;
 import com.github.wgzhao.dbquery.repo.QueryLogRepo;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/querylogs")
+@RequestMapping("/admin/api/v1/querylogs")
 public class QueryLogController
 {
     @Autowired
