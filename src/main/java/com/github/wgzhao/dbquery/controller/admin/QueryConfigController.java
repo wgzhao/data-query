@@ -8,6 +8,7 @@ import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/admin/api/v1/queryconfig")
+@RequestMapping("/admin/api/v1/queryConfig")
 public class QueryConfigController {
 
     @Autowired
@@ -41,6 +42,11 @@ public class QueryConfigController {
     @GetMapping("/{id}")
     public QueryConfig get(@PathVariable("id") String id) {
         return queryConfigRepo.findById(id).orElse(null);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable("id") String id) {
+        queryConfigRepo.deleteById(id);
     }
 
     @GetMapping("/datasources")

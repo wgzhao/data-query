@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/api/v1/datasources")
+@RequestMapping("/admin/api/v1/dataSource")
 @RequiredArgsConstructor
 @CrossOrigin
 public class DataSourcesController {

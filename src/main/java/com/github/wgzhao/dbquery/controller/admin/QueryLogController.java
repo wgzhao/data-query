@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/admin/api/v1/querylogs")
+@RequestMapping("/admin/api/v1/queryLog")
 public class QueryLogController
 {
     @Autowired
