@@ -62,7 +62,7 @@ public class TestSign {
         queryParam.put("selectId","q1");
         StringJoiner joiner = new StringJoiner("&");
         queryParam.keySet().stream().sorted().forEach(key -> joiner.add(key + "=" + queryParam.get(key)));
-        String str1 = joiner.toString()+appId+appKey;
+        String str1 = joiner + appId + appKey;
         Assert.assertEquals(str1, sortedParams);
         String _sign= DigestUtils.md5DigestAsHex(str1.getBytes(StandardCharsets.UTF_8));
         Assert.assertEquals(_sign, validSign);
@@ -155,7 +155,5 @@ http://10.90.70.11:9090/dataquery/api/v1/query?selectId=test_trino&_appId=72f392
 
 生产环境部署在生产的 k8s 集群上，可以通过 `http://10.90.23.32:9090/dataquery/api/v1/query` 查询。
 如果是容器内访问，则可以使用 `http://data-query.grp-arch:9090/dataquery/api/v1/query` 进行访问。
-
-生产环境的查询所需要的授权需单独申请，申请方式请发送邮件到 `zhaoweiguo@lczq.com`，标题写明 `xxxx项目申请数据查询授权`。
 
 建议按照项目来申请授权，每一个项目申请独立的授权而不混用。

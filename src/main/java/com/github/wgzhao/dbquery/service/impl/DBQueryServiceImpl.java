@@ -3,12 +3,10 @@ package com.github.wgzhao.dbquery.service.impl;
 import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.entities.QueryConfig;
 import com.github.wgzhao.dbquery.entities.QueryLog;
-import com.github.wgzhao.dbquery.entities.QueryParam;
 import com.github.wgzhao.dbquery.errors.ParamException;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryLogRepo;
-import com.github.wgzhao.dbquery.repo.QueryParamRepo;
 import com.github.wgzhao.dbquery.service.ConnectionDB;
 import com.github.wgzhao.dbquery.service.DBQueryService;
 import com.github.wgzhao.dbquery.util.CacheUtil;
@@ -42,9 +40,6 @@ public class DBQueryServiceImpl
     private QueryConfigRepo queryConfigRepo;
 
     @Autowired
-    private QueryParamRepo queryParamsRepo;
-
-    @Autowired
     private QueryLogRepo queryLogRepo;
 
     @Autowired
@@ -74,24 +69,7 @@ public class DBQueryServiceImpl
                 return (List<Map<String, Object>>) cacheUtil.get(redisKey);
             }
         }
-        List<QueryParam> queryParamList = queryParamsRepo.findBySelectId(selectId);
-        Map<String, String> valuesMap = new HashMap<>();
-        // 所有写入 query_params 表的参数都是必选参数，其他从 SQL 语句提取出来的参数为可选参数，同时 allParams 中的 key 也是小写
-        for (QueryParam queryParam : queryParamList) {
-            // query_params 表中的参数名在写入时已经变成小写
-            if (!lowerQueryParams.containsKey(queryParam.getParamName())) {
-                logger.warn("The query param {} has not found", queryParam.getParamName());
-                throw new ParamException("参数 " + queryParam.getParamName() + " 不存在");
-            }
-            valuesMap.put(queryParam.getParamName(), lowerQueryParams.get(queryParam.getParamName()));
-        }
-        // 提取 SQL 语句中的参数，参数是 ${xxx} 形式
-        List<String> otherParams = getParamNames(queryConfig.getQuerySql());
-        for (String paramName : otherParams) {
-            valuesMap.put(paramName, lowerQueryParams.getOrDefault(paramName.toLowerCase(), ""));
-        }
-        StringSubstitutor sub = new StringSubstitutor(valuesMap);
-        String executeSql = sub.replace(queryConfig.getQuerySql());
+        String executeSql = handleSql(queryConfig.getQuerySql(), lowerQueryParams);
 
         DataSources dataSource = dataSourceRepo.findById(queryConfig.getDataSource()).orElse(null);
         //fill back with real execute sql statement
@@ -126,5 +104,27 @@ public class DBQueryServiceImpl
             }
         }
         return result;
+    }
+
+    /**
+     * 将 SQL 中的 ${xxx} 形式的参数替换为实际的值
+     * 替换规则如下：
+     * 1. 如果变量${xxx} 已经在 query_params 表中定义，则直接替换为定义的值，否则
+     * 2. 变量使用 null 字符串进行替换
+     * @param sql 需要替换的 SQL
+     * @param lowerQueryParams 传递过来的所有的参数
+     * @return 替换后的 SQL
+     */
+    private String handleSql(String sql, Map<String, String> lowerQueryParams) {
+        // 获取所有的参数
+        List<String> sqlParams = getParamNames(sql);
+        if (sqlParams.isEmpty()) {
+            return sql;
+        }
+        Map<String, Object> valueMap = new HashMap<>();
+        for (String param: sqlParams) {
+            valueMap.put(param, lowerQueryParams.getOrDefault(param.toLowerCase(), "null"));
+        }
+        return new StringSubstitutor(valueMap).replace(sql);
     }
 }

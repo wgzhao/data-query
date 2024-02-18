@@ -11,7 +11,6 @@ import com.github.wgzhao.dbquery.util.SignUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,14 +31,17 @@ import static com.github.wgzhao.dbquery.constant.Constants.WHITE_IP_LIST;
 @Slf4j
 public class DBQueryController {
 
-    @Autowired
-    private DBQueryService queryService;
+    private final DBQueryService queryService;
 
-    @Autowired
-    private SignService signService;
+    private final SignService signService;
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
+
+    public DBQueryController(DBQueryService queryService, SignService signService, Environment environment) {
+        this.queryService = queryService;
+        this.signService = signService;
+        this.environment = environment;
+    }
 
     private Map<String, String> queryParams;
     private Map<String, String> controlParams;
