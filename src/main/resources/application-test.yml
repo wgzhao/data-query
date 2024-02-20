@@ -16,7 +16,7 @@ spring:
         min-idle: 0
   log:
     level:
-      root: INFO
+      root: DEBUG
       org:
         springframework:
           data:
