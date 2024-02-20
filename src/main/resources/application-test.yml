@@ -4,16 +4,17 @@ spring:
     username: dbquery
     password: 9P5V1n3LQC3p
     driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    database: 1
-    host: redis.grp-arch
-    port: 6379
-    password: redis@123
-    lettuce:
-      pool:
-        max-active: 8
-        max-wait: 5000
-        min-idle: 0
+  data:
+    redis:
+      database: 1
+      host: redis.grp-arch
+      port: 6379
+      password: redis@123
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: 5000
+          min-idle: 0
   log:
     level:
       root: DEBUG
