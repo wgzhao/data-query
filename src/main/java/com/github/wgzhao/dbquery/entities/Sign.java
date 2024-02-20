@@ -23,4 +23,9 @@ public class Sign
     private String appKey;
 
     private String applier;
+
+    public String toString()
+    {
+        return this.appId + this.appKey;
+    }
 }
