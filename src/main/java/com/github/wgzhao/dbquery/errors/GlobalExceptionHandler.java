@@ -1,10 +1,9 @@
 package com.github.wgzhao.dbquery.errors;
 
-import com.github.wgzhao.dbquery.param.RestResponse;
-import com.github.wgzhao.dbquery.param.RestResponseBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,9 +17,10 @@ public class GlobalExceptionHandler
 
     @ResponseBody
     @ExceptionHandler({MissingServletRequestParameterException.class})
-    public RestResponse<String> handleMissingRequestParameter(HttpServletRequest request, Exception ex)
+    public ResponseEntity<String> handleMissingRequestParameter(HttpServletRequest request, Exception ex)
     {
         logger.info("Exception occurred: URI= " + request.getRequestURI() + ", error: " + ex.getMessage());
-        return RestResponseBuilder.fail(400, ex.getMessage());
+        
+        return ResponseEntity.status(400).body(ex.getMessage());
     }
 }

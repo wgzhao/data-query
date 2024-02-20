@@ -1,6 +1,8 @@
 package com.github.wgzhao.dbquery.util;
 
 import jakarta.annotation.Resource;
+import lombok.NonNull;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,7 @@ public class CacheUtil
         return serializableRedisTemplate.opsForValue().get(CACHE_KEY_PREFIX + key);
     }
 
-    public void set(final String key, final Serializable value, long expireTime)
+    public void set(final String key, final @NonNull Serializable value, long expireTime)
     {
         serializableRedisTemplate.opsForValue().set(CACHE_KEY_PREFIX + key, value, expireTime, TimeUnit.SECONDS);
     }
