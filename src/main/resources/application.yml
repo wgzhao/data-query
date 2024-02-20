@@ -1,21 +1,18 @@
 spring:
   profiles:
-    active: @profileActive@
+    active: dev
   jpa:
     open-in-view: false
   sql:
     init:
-      mode: always
+      mode: NEVER
       encoding: UTF-8
       platform: mysql
 
 server:
   port: 9090
-  servlet:
-    context-path: /dataquery
-mybatis:
-  mapper-locations: classpath:/mapper/**Mapper.xml
-
+  ssl:
+    enabled: false
 logging:
   file:
     path: logs/
@@ -23,6 +20,14 @@ logging:
   logback:
     rollingpolicy:
       max-history: 7
-pagehelper:
-  auto-dialect: true
-  support-methods-arguments: true
+
+jwt:
+  # different expiration time for each token
+  expiration:
+    access-token: 86400000          # 1 hour
+    refresh-token: 604800000       # 7 days
+    reset-password: 900000         # 15 minutes
+    enable-account: 900000
+
+  # The jwt secret key is used to sign the token.
+  secret: 8A22DD3A8C2F5364AA2C6C421F5FD1395DF9B0B3
