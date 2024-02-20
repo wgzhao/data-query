@@ -22,12 +22,11 @@ spring:
       connection-test-query: SELECT 1
   redis:
     database: 0
+    host: redis.grp-arch
+    port: 6379
+    password: redis@123
     lettuce:
       pool:
         max-active: 8
         max-wait: 5000
         min-idle: 0
-
-    host: redis.grp-arch
-    port: 6379
-    password: redis@123
