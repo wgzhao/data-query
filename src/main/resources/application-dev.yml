@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://node11:13302/data_query?allowPublicKeyRetrieval=yes&allowMultiQueries=true&useSSL=false&tinyInt1isBit=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://wgzhao-pc:3306/data_query?allowPublicKeyRetrieval=yes&allowMultiQueries=true&useSSL=false&tinyInt1isBit=false&serverTimezone=GMT%2B8
     username: dbquery
-    password: 9P5V1n3LQC3p
+    password: dbquery@123
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -29,3 +29,12 @@ spring:
       host: wgzhao-pc
       port: 6379
       password: redis@123
+  log:
+    level:
+      root: INFO
+      org:
+        springframework:
+          data:
+            redis:
+              connection:
+                LettuceConnection: DEBUG

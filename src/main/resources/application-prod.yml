@@ -20,13 +20,14 @@ spring:
       # 数据库连接超时时间,默认30秒，即30000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-  redis:
-    database: 0
-    host: redis.grp-arch
-    port: 6379
-    password: redis@123
-    lettuce:
-      pool:
-        max-active: 8
-        max-wait: 5000
-        min-idle: 0
+  data:
+    redis:
+      database: 0
+      host: redis.grp-arch
+      port: 6379
+      password: redis@123
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: 5000
+          min-idle: 0

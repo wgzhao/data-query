@@ -72,6 +72,10 @@ public class DBQueryServiceImpl
         String executeSql = handleSql(queryConfig.getQuerySql(), lowerQueryParams);
 
         DataSources dataSource = dataSourceRepo.findById(queryConfig.getDataSource()).orElse(null);
+        if (dataSource == null ) {
+            logger.warn("The query selectId {} has not found data source: {}", selectId, queryConfig.getDataSource());
+            throw new ParamException("查询ID " + selectId + " 未找到数据源");
+        }
         //fill back with real execute sql statement
         logger.info("execute sql is {}", executeSql);
         //async save executed sql to db
