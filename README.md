@@ -5,7 +5,7 @@
 ## 用法
 
 ```shell
-curl -X GET http://localhost:9090/dataquery/api/v1/query?selectId=xxxx&k1=v1&k2=v2&_sign=xxxx&_appId=xxxx
+curl -X GET http://localhost:9090/api/v1/query?selectId=xxxx&k1=v1&k2=v2&_sign=xxxx&_appId=xxxx
 ```
 
 - `selectId` 查询ID， 这是必须的参数
@@ -92,17 +92,6 @@ def test_sign():
 	assert sign == validSign
 ```
 
-## 部署环境
-
-### 测试环境
-
-测试环境的接口部署在测试环境的 k8s 集群上，可以通过  `http://10.90.70.11:9090/dataquery/api/v1/query` 进行查询
-
-下面是一个有效的查询
-
-```shell
-http://10.90.70.11:9090/dataquery/api/v1/query?selectId=test_trino&_appId=72f392f2e6a90e9a&_sign=57c2597b003a6e4fc925bdf713092dd5
-```
 
 输出结果类似如下：
 
@@ -149,11 +138,3 @@ http://10.90.70.11:9090/dataquery/api/v1/query?selectId=test_trino&_appId=72f392
 
 测试环境可以使用上文中提到的 `appId` 以及 `appKey` 而不需要额外申请。
 
-如果是在容器内访问，则可以使用 `http://data-query.grp-arch:9090/dataquery/api/v1/query`
-
-### 生产环境
-
-生产环境部署在生产的 k8s 集群上，可以通过 `http://10.90.23.32:9090/dataquery/api/v1/query` 查询。
-如果是容器内访问，则可以使用 `http://data-query.grp-arch:9090/dataquery/api/v1/query` 进行访问。
-
-建议按照项目来申请授权，每一个项目申请独立的授权而不混用。
