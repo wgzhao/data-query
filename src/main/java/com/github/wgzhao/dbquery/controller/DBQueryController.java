@@ -80,10 +80,12 @@ public class DBQueryController {
             queryResult.setData(Map.of("result", result));
             return queryResult;
         } catch (ParamException e) {
+            e.printStackTrace();
             log.error("Query failed, error msg is {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new QueryResult(e.getMessage());
         } catch (ClassNotFoundException | SQLException | RuntimeException e) {
+            e.printStackTrace();
             log.error("Query failed, error msg is {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return new QueryResult(e.getMessage());

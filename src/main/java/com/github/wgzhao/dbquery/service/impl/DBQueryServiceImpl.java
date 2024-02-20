@@ -83,10 +83,8 @@ public class DBQueryServiceImpl
                 cacheUtil.set(redisKey, (Serializable) rsList, queryConfig.getCacheTime());
             }
             return rsList;
-        } catch (SQLException e) {
-            logger.error("The query with selectId {} has failure: {}", selectId, e.getMessage());
-            throw new RuntimeException("查询的 SQL语句异常: " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("The query with selectId {} has failure: {}", selectId, e.getMessage());
             throw new RuntimeException("查询失败: " + e.getMessage());
         }
