@@ -34,7 +34,6 @@ public class ConnectionDB {
 
         Class.forName(jdbcDriver);
         conn = DriverManager.getConnection(dbUrl, user, pass);
-
         stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
         ResultSetMetaData rsmd = rs.getMetaData();
