@@ -30,9 +30,10 @@ public class QueryLogController
     public Page<QueryLog> list(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "sort", required = false) List<Map<String, String>> sort)
+            @RequestParam(value = "sortKey", required = false) String sortKey,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder)
     {
-        Pageable pageable = createPageable(page, size, sort);
+        Pageable pageable = createPageable(page, size, sortKey, sortOrder);
         return queryLogRepo.findAll(pageable);
     }
 
@@ -41,9 +42,10 @@ public class QueryLogController
             @PathVariable("selectId") String selectId,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "sort", required = false) List<Map<String, String>> sort)
+            @RequestParam(value = "sortKey", required = false) String sortKey,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder)
     {
-        Pageable pageable = createPageable(page, size, sort);
+        Pageable pageable = createPageable(page, size, sortKey, sortOrder);
         return queryLogRepo.findAllBySelectId(selectId, pageable);
     }
 
@@ -52,27 +54,39 @@ public class QueryLogController
             @PathVariable("appId") String appId,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
-            @RequestParam(value = "sort", required = false) List<Map<String, String>> sort)
+            @RequestParam(value = "sortKey", required = false) String sortKey,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder)
     {
-        Pageable pageable = createPageable(page, size, sort);
+        Pageable pageable = createPageable(page, size, sortKey, sortOrder);
         return queryLogRepo.findAllByAppId(appId, pageable);
     }
 
-    private Pageable createPageable(int page, int size, List<Map<String, String>> sort)
+    private Pageable createPageable(int page, int size, String sortKey, String sortOrder)
     {
         List<Sort.Order> orders = new ArrayList<>();
         Sort sortBy;
+
+
         if (size < 0 ) {
             size = Integer.MAX_VALUE;
         }
-        if (sort != null && ! sort.isEmpty()) {
-            for (Map<String, String> s : sort) {
-                String key = s.get("key");
-                String value = s.get("order").toLowerCase();
-                if (value.equals("asc")) {
-                    orders.add(Sort.Order.asc(key));
+
+        if (sortKey.isEmpty() || sortOrder.isEmpty()) {
+            return Pageable.ofSize(size).withPage(page);
+        }
+
+        String[] k = sortKey.split(",");
+        String[] o = sortOrder.split(",");
+        if (k.length != o.length) {
+            return Pageable.ofSize(size).withPage(page);
+        }
+        
+        if (k.length > 0) {
+            for (int i = 0; i < k.length; i++) {
+                if (o[i].equalsIgnoreCase("asc")) {
+                    orders.add(Sort.Order.asc(k[i]));
                 } else {
-                    orders.add(Sort.Order.desc(key));
+                    orders.add(Sort.Order.desc(k[i]));
                 }
             }
         }
@@ -80,7 +94,7 @@ public class QueryLogController
         if (sortBy.isUnsorted()) {
             return Pageable.ofSize(size).withPage(page);
         } else {
-            return PageRequest.of(size, page, sortBy);
+            return PageRequest.of(page, size, sortBy);
         }
     }
 }
