@@ -41,7 +41,7 @@ public class ConnectionDB {
         while (rs.next()) {
             rsMap = new HashMap<>(numberOfColumns);
             for (int i = 1; i < numberOfColumns + 1; i++) {
-                rsMap.put(rsmd.getColumnName(i), rs.getObject(i));
+                rsMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
             }
             result.add(rsMap);
         }
