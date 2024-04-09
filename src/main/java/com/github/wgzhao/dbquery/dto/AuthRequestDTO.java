@@ -1,13 +1,16 @@
 package com.github.wgzhao.dbquery.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+
+@Data
 @AllArgsConstructor
-public class AuthenticationRequest {
+@NoArgsConstructor
+@Builder
+public class AuthRequestDTO {
 
     private String username;
     private String password;
