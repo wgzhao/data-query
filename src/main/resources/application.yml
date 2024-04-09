@@ -3,11 +3,18 @@ spring:
     active: dev
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: update
   sql:
     init:
       mode: NEVER
       encoding: UTF-8
       platform: mysql
+  security:
+    user:
+      name: admin
+      password: admin123
+
 
 server:
   port: 9090
