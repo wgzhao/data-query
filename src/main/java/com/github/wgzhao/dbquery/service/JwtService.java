@@ -8,29 +8,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
-import javax.sql.DataSource;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,9 +39,7 @@ public class JwtService
     @Value("${jwt.expiration.enable-account}")
     private int enableAccountTokenExpiration;
 
-
-    private final static SecretKey KEY =  Keys.hmacShaKeyFor(SECRET.getBytes());
-
+    private final static SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver)
     {
@@ -90,7 +73,11 @@ public class JwtService
     public String resolveToken(HttpServletRequest request)
     {
 
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken;
+        bearerToken = request.getHeader("Authorization");
+        if (! StringUtils.hasText(bearerToken)) {
+            bearerToken = request.getHeader("authorization");
+        }
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
@@ -108,27 +95,6 @@ public class JwtService
     {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-//
-//        try {
-//            Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
-//            return true;
-//        }
-//        catch (MalformedJwtException ex) {
-//            log.error("Invalid JWT token");
-//        }
-//        catch (ExpiredJwtException ex) {
-//            log.error("Expired JWT token");
-//        }
-//        catch (UnsupportedJwtException ex) {
-//            log.error("Unsupported JWT token");
-//        }
-//        catch (IllegalArgumentException ex) {
-//            log.error("JWT claims string is empty");
-//        }
-//        catch (SignatureException ex) {
-//            log.error("JWT signature does not match locally computed signature");
-//        }
-//        return false;
     }
 
     // Extract the username from the JWT token
@@ -137,13 +103,14 @@ public class JwtService
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token)
+    private Date extractExpiration(String token)
     {
         return extractClaim(token, Claims::getExpiration);
     }
+
     public boolean isTokenExpired(String token)
     {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
     private Claims extractAllClaims(String jwtToken)
@@ -154,15 +121,20 @@ public class JwtService
                     .build()
                     .parseSignedClaims(jwtToken)
                     .getPayload();
-        } catch (ExpiredJwtException ex) {
+        }
+        catch (ExpiredJwtException ex) {
             log.error("Expired JWT token");
-        } catch (UnsupportedJwtException ex) {
+        }
+        catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token");
-        } catch (MalformedJwtException ex) {
+        }
+        catch (MalformedJwtException ex) {
             log.error("Invalid JWT token");
-        } catch (SignatureException ex) {
+        }
+        catch (SignatureException ex) {
             log.error("JWT signature does not match locally computed signature");
-        } catch (IllegalArgumentException ex) {
+        }
+        catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty");
         }
         return null;

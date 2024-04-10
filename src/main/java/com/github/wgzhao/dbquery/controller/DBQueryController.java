@@ -8,6 +8,7 @@ import com.github.wgzhao.dbquery.service.SignService;
 import com.github.wgzhao.dbquery.util.HttpUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import com.github.wgzhao.dbquery.util.SignUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,9 @@ import static com.github.wgzhao.dbquery.constant.Constants.SIGN;
 import static com.github.wgzhao.dbquery.constant.Constants.WHITE_IP_LIST;
 
 @RestController
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "${app.api.query-prefix}")
 @Slf4j
+@Tag(name = "DBQuery", description = "DB Query APIs")
 public class DBQueryController {
 
     private final DBQueryService queryService;

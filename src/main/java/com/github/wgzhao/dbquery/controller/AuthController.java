@@ -3,6 +3,7 @@ package com.github.wgzhao.dbquery.controller;
 import com.github.wgzhao.dbquery.dto.AuthRequestDTO;
 import com.github.wgzhao.dbquery.dto.JwtResponseDTO;
 import com.github.wgzhao.dbquery.service.JwtService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,8 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/admin/api/v1/auth")
+@RequestMapping("${app.api.manage-prefix}/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Authentication APIs")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -37,28 +39,4 @@ public class AuthController {
         }
 
     }
-
-//    @GetMapping("/validate")
-//    public CommResponse validate(HttpServletRequest request) {
-//        String token = jwtService.resolveToken(request);
-//        if (token == null) {
-//            return new CommResponse(false, "Unauthorized");
-//        }
-//        if (jwtService.validateToken(token)) {
-//            return new CommResponse(true, "Authorized");
-//        } else {
-//            return new CommResponse(false, "Unauthorized");
-//        }
-//    }
-
-//    @GetMapping("/refresh")
-//    public AuthenticationResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        return jwtService.refreshToken(request, response);
-//    }
-//
-//    @GetMapping("/logout")
-//    public CommResponse logout(HttpServletRequest request, HttpServletResponse response) {
-//        jwtService.logout(request, response);
-//        return new CommResponse(true, "Logout success");
-//    }
 }

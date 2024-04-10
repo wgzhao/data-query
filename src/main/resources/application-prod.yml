@@ -31,3 +31,9 @@ spring:
           max-active: 8
           max-wait: 5000
           min-idle: 0
+# disable springdoc for production
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
