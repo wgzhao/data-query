@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/admin/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
