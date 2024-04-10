@@ -39,7 +39,7 @@ public class SecurityConfiguration
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/admin/**").authenticated()
+                        .requestMatchers("/admin/api/v1/auth/**", "/api/v1/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
