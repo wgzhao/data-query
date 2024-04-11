@@ -10,11 +10,6 @@ spring:
       mode: NEVER
       encoding: UTF-8
       platform: mysql
-  security:
-    user:
-      name: admin
-      password: admin123
-
 
 server:
   port: 9090
