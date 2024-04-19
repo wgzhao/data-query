@@ -34,11 +34,9 @@ public class JwtFilter
     )
             throws ServletException, IOException
     {
-        String authHeader = request.getHeader("authorization");
-        String token = null;
         String username = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
+        String token = jwtService.resolveToken(request);
+        if (token != null) {
             username = jwtService.extractUsername(token);
         }
 
@@ -48,12 +46,12 @@ public class JwtFilter
         }
         // validate token is expired or not
         if (jwtService.isTokenExpired(token)) {
-            log.info("token expired, username: {}", username);
+            log.debug("token expired, username: {}", username);
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("valid token, username: {}", username);
+        log.debug("valid token, username: {}", username);
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, null, List.of());
 

@@ -5,14 +5,16 @@ import com.github.wgzhao.dbquery.entities.Sign;
 import com.github.wgzhao.dbquery.errors.ParamException;
 import com.github.wgzhao.dbquery.service.DBQueryService;
 import com.github.wgzhao.dbquery.service.SignService;
-import com.github.wgzhao.dbquery.util.HttpUtil;
 import com.github.wgzhao.dbquery.util.ParamUtil;
 import com.github.wgzhao.dbquery.util.SignUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +26,12 @@ import java.util.Map;
 import static com.github.wgzhao.dbquery.constant.Constants.APP_ID;
 import static com.github.wgzhao.dbquery.constant.Constants.MAGIC_SIGN;
 import static com.github.wgzhao.dbquery.constant.Constants.SIGN;
-import static com.github.wgzhao.dbquery.constant.Constants.WHITE_IP_LIST;
+
 
 @RestController
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "${app.api.query-prefix}")
 @Slf4j
+@Tag(name = "DBQuery", description = "DB Query APIs")
 public class DBQueryController {
 
     private final DBQueryService queryService;
@@ -45,8 +48,11 @@ public class DBQueryController {
 
     private Map<String, String> queryParams;
     private Map<String, String> controlParams;
+    private Map<String, String> allParams;
 
     private String errorMsg;
+
+    private HttpServletResponse response;
 
     @GetMapping("/")
     public String index() {
@@ -54,17 +60,34 @@ public class DBQueryController {
     }
 
     @RequestMapping(value = "/query", produces = "application/json;charset=UTF-8")
-    public QueryResult executeQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams,
+    public QueryResult getQuery(@RequestParam() String selectId, @RequestParam Map<String, String> allParams,
                                     HttpServletRequest request, HttpServletResponse response) {
+        this.response = response;
+        this.allParams = allParams;
+        return executeQuery(selectId);
+    }
 
+    @PostMapping("/query")
+    public QueryResult postQuery(@RequestBody Map<String, String> payload, HttpServletRequest request, HttpServletResponse response) {
+        String selectId = payload.getOrDefault("selectId", "");
+        if (selectId.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return new QueryResult("缺少必要的参数 selectId");
+        }
+        this.response = response;
+        this.allParams = payload;
+        return executeQuery(selectId);
+    }
+
+    private QueryResult executeQuery(String selectId) {
         log.info("Begin to query with selectId {} and all params {}", selectId, allParams);
         //take the all params break into 2 parts, one is the query params, the other is the control params
         this.queryParams = ParamUtil.getQueryParams(allParams);
         this.controlParams = ParamUtil.getControlParams(allParams);
 
-        if (!checkControlParams(request)) {
+        if (!checkControlParams()) {
             log.error("Control params is invalid, error msg is {}", errorMsg);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            this.response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new QueryResult(errorMsg);
         }
 
@@ -97,13 +120,7 @@ public class DBQueryController {
      *
      * @return true if valid, false if not
      */
-    private boolean checkControlParams(HttpServletRequest request) {
-        String clientIP = HttpUtil.getClientIpAddr(request);
-        log.info("client come from {}", clientIP);
-        if (WHITE_IP_LIST.contains(clientIP)) {
-            log.info("client ip {} is in white ip list, DO NOT check sign", clientIP);
-            return true;
-        }
+    private boolean checkControlParams() {
         // check _sign has exists
         String sign = controlParams.getOrDefault(SIGN, null);
         if (sign == null || sign.isEmpty()) {

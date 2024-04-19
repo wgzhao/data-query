@@ -10,11 +10,6 @@ spring:
       mode: NEVER
       encoding: UTF-8
       platform: mysql
-  security:
-    user:
-      name: admin
-      password: admin123
-
 
 server:
   port: 9090
@@ -36,5 +31,7 @@ jwt:
     reset-password: 900000         # 15 minutes
     enable-account: 900000
 
-  # The jwt secret key is used to sign the token.
-  secret: 8A22DD3A8C2F5364AA2C6C421F5FD1395DF9B0B3
+app:
+  api:
+    manage-prefix: /admin/api/v1
+    query-prefix: /api/v1
