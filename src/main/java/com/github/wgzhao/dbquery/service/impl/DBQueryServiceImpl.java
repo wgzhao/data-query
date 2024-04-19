@@ -76,7 +76,7 @@ public class DBQueryServiceImpl
             throw new ParamException("查询ID " + selectId + " 未找到数据源");
         }
         //fill back with real execute sql statement
-        logger.info("execute sql is {}", executeSql);
+        logger.info("execute sql is:\n {}", executeSql);
         //async save executed sql to db
         queryLogRepo.save(new QueryLog(0, appId, selectId, executeSql));
         queryConfig.setQuerySql(executeSql);
