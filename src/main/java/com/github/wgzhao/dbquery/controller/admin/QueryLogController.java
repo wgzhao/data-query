@@ -34,6 +34,18 @@ public class QueryLogController
         return queryLogRepo.findAll(pageable);
     }
 
+    @GetMapping("/search")
+    public Page<QueryLog> search(
+            @RequestParam(value = "q", required = true) String q,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sortKey", required = false) String sortKey,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder)
+    {
+        Pageable pageable = createPageable(page, size, sortKey, sortOrder);
+        return queryLogRepo.findByQuerySqlContaining(q, pageable);
+    }
+
     @GetMapping("/by/selectId/{selectId}")
     public Page<QueryLog> listBySelectId(
             @PathVariable("selectId") String selectId,
