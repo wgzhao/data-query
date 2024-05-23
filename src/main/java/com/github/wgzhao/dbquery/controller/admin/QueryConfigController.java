@@ -6,6 +6,8 @@ import com.github.wgzhao.dbquery.entities.QueryParam;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
 import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.repo.QueryParamRepo;
+import com.github.wgzhao.dbquery.util.CacheUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,9 @@ public class QueryConfigController {
 
     @Autowired
     private QueryParamRepo queryParamsRepo;
+
+    @Resource
+    private CacheUtil cacheUtil;
 
     /**
      * list all query config
@@ -74,5 +79,10 @@ public class QueryConfigController {
     public int saveParams(@RequestBody  List<QueryParam> params) {
         queryParamsRepo.saveAll(params);
         return params.size();
+    }
+
+    @DeleteMapping("/cache/{selectId}")
+    public int deleteCache(@PathVariable("selectId") String selectId) {
+        return cacheUtil.deleteKeys(selectId);
     }
 }
