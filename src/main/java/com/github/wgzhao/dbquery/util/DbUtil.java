@@ -75,17 +75,17 @@ public class DbUtil
                     connection.createStatement().execute("SELECT 1");
                 }
                 connection.close();
-                return new CommResponse(true, "");
+                return new CommResponse(200, "", null);
             }
         }
         catch (ClassNotFoundException e) {
             log.error("Driver not found: {}", db.getDriver());
-            return new CommResponse(false, "Driver not found: " + db.getDriver());
+            return new CommResponse(500, "Driver not found: " + db.getDriver(), null);
         }
         catch (SQLException e) {
             log.error("Connection failed: {}", e.getMessage());
-            return new CommResponse(false, e.getMessage());
+            return new CommResponse(500, e.getMessage(), null);
         }
-        return new CommResponse(false, "Unknown error");
+        return new CommResponse(500, "Unknown error", null);
     }
 }

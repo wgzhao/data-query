@@ -36,9 +36,9 @@ public class SignController {
     public CommResponse delete(@PathVariable("id") String id) {
         if (signRepo.existsById(id)) {
             signRepo.deleteById(id);
-            return new CommResponse(true, "");
+            return new CommResponse(200, "", null);
         } else {
-            return new CommResponse(true, "Sign has deleted");
+            return new CommResponse(200, "Sign has deleted", null);
         }
     }
 

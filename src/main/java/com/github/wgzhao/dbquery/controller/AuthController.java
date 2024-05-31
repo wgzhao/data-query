@@ -1,7 +1,7 @@
 package com.github.wgzhao.dbquery.controller;
 
 import com.github.wgzhao.dbquery.dto.AuthRequestDTO;
-import com.github.wgzhao.dbquery.dto.JwtResponseDTO;
+import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.service.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @CrossOrigin
 @RequestMapping("${app.api.manage-prefix}/auth")
@@ -27,11 +29,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
+    public CommResponse AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if(authentication.isAuthenticated()){
-            return JwtResponseDTO.builder()
-                    .accessToken(jwtService.generateToken(authRequestDTO.getUsername()))
+            return CommResponse.builder()
+                    .code(200)
+                    .message("success")
+                    .result(Map.of("token", jwtService.generateToken(authRequestDTO.getUsername())))
                     .build();
 
         } else {
