@@ -54,10 +54,10 @@ public class DataSourcesController
     {
         if (dataSourceRepo.existsById(id)) {
             dataSourceRepo.deleteById(id);
-            return new CommResponse(true, "");
+            return new CommResponse(200, "", null);
         }
         else {
-            return new CommResponse(true, "Data source has deleted");
+            return new CommResponse(200, "Data source has deleted", null);
         }
     }
 }
