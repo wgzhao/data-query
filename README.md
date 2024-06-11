@@ -2,6 +2,8 @@
 
 该项目是一个统一数据查询接口，支持多种数据源，支持多种数据查询方式，支持多种数据查询结果格式，支持多种数据查询结果缓存。
 
+前端管理界面代码在[data-query-ui](https://github.com/wgzhao/data-query-ui)
+
 ## 用法
 
 ```shell
