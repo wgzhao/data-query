@@ -24,8 +24,8 @@ public class TestAuth {
     public void testLogin() throws Exception {
         mockMvc.perform(post("/admin/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"user\",\"password\":\"admin123\"}"))
+                .content("{\"username\":\"admin\",\"password\":\"admin123\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("accessToken")));
+                .andExpect(content().string(containsString("token")));
     }
 }
