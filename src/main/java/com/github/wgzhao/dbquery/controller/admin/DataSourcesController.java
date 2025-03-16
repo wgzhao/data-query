@@ -3,6 +3,7 @@ package com.github.wgzhao.dbquery.controller.admin;
 import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.entities.DataSources;
 import com.github.wgzhao.dbquery.repo.DataSourceRepo;
+import com.github.wgzhao.dbquery.repo.QueryConfigRepo;
 import com.github.wgzhao.dbquery.util.DbUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,6 +25,9 @@ public class DataSourcesController
 {
 
     private final DataSourceRepo dataSourceRepo;
+
+    private final QueryConfigRepo queryConfigRepo;  // Add this
+
 
     @GetMapping
     public List<DataSources> list()
@@ -52,6 +56,10 @@ public class DataSourcesController
     @DeleteMapping("/{id}")
     public CommResponse delete(@PathVariable("id") String id)
     {
+        // check if it has some query config associated with this data sources
+        if (queryConfigRepo.existsByDataSource(id)) {
+            return new CommResponse(400, "Cannot delete: Data source is used by one or more query configurations", null);
+        }
         if (dataSourceRepo.existsById(id)) {
             dataSourceRepo.deleteById(id);
             return new CommResponse(200, "", null);
