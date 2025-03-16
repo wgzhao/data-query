@@ -24,6 +24,8 @@ public class Sign
 
     private String applier;
 
+    private boolean enabled;
+
     public String toString()
     {
         return this.appId + this.appKey;

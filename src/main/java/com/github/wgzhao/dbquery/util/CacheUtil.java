@@ -38,7 +38,7 @@ public class CacheUtil
     {
         int deletedNum = 0;
         final Set<String> keys = serializableRedisTemplate.keys(CACHE_KEY_PREFIX + selectId + "_*");
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             return deletedNum;
         }
         for (String key : keys) {

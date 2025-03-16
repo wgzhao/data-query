@@ -87,7 +87,6 @@ public class DBQueryServiceImpl
             }
             return rsList;
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("The query with selectId {} has failure: {}", selectId, e.getMessage());
             throw new RuntimeException("查询失败: " + e.getMessage());
         }
