@@ -2,6 +2,7 @@ package com.github.wgzhao.dbquery.controller.admin;
 
 import com.github.wgzhao.dbquery.dto.CommResponse;
 import com.github.wgzhao.dbquery.entities.Sign;
+import com.github.wgzhao.dbquery.repo.QueryConfigSignRepo;
 import com.github.wgzhao.dbquery.repo.SignRepo;
 import com.github.wgzhao.dbquery.util.SignUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.List;
 public class SignController {
 
     private final SignRepo signRepo;
+    private final QueryConfigSignRepo queryConfigSignRepo;
 
     @GetMapping
     public List<Sign> list() {
@@ -28,17 +30,22 @@ public class SignController {
     }
 
     @PostMapping
-    public Sign save(@RequestBody  Sign sign) {
+    public Sign save(@RequestBody Sign sign) {
         return signRepo.save(sign);
     }
 
     @DeleteMapping("/{id}")
     public CommResponse delete(@PathVariable("id") String id) {
+        // Check if this sign is associated with any query configurations
+        if (queryConfigSignRepo.existsBySignId(id)) {
+            return new CommResponse(400, "Cannot delete: Sign is used by one or more query configurations", null);
+        }
+
         if (signRepo.existsById(id)) {
             signRepo.deleteById(id);
-            return new CommResponse(200, "", null);
+            return new CommResponse(200, "Sign deleted successfully", null);
         } else {
-            return new CommResponse(200, "Sign has deleted", null);
+            return new CommResponse(200, "Sign has already been deleted", null);
         }
     }
 
