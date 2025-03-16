@@ -45,9 +45,9 @@ public class SecurityConfiguration
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401, "Unauthorized")));
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .exceptionHandling((exceptionHandling) -> exceptionHandling
+//                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401, "Unauthorized")));
 
         return http.build();
     }
