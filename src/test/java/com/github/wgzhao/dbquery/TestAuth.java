@@ -26,6 +26,6 @@ public class TestAuth {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"user\",\"password\":\"admin123\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("accessToken")));
+                .andExpect(content().string(containsString("token")));
     }
 }

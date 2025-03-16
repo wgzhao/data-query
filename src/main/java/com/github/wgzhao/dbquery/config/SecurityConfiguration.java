@@ -20,6 +20,9 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -36,8 +39,17 @@ public class SecurityConfiguration
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception
     {
+        // Define patterns that Spring Security should handle
+        RequestMatcher protectedPaths = new OrRequestMatcher(
+                new AntPathRequestMatcher("/admin/api/v1/**"),
+                new AntPathRequestMatcher("/admin/**")
+                // Add other patterns for protected endpoints
+        );
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
+                // Apply security only to specific patterns
+                .securityMatcher(protectedPaths)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/admin/api/v1/auth/**", "/api/v1/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
@@ -52,7 +64,7 @@ public class SecurityConfiguration
         return http.build();
     }
 
-
+    // Keep the rest of the beans unchanged
     @Bean
     PasswordEncoder passwordEncoder()
     {
@@ -65,7 +77,6 @@ public class SecurityConfiguration
         authenticationProvider.setUserDetailsService(userDetailsService(dataSource));
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-
     }
 
     @Bean
