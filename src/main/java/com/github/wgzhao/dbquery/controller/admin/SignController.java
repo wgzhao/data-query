@@ -6,7 +6,11 @@ import com.github.wgzhao.dbquery.entities.Sign;
 import com.github.wgzhao.dbquery.repo.QueryConfigSignRepo;
 import com.github.wgzhao.dbquery.repo.SignRepo;
 import com.github.wgzhao.dbquery.util.SignUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +26,14 @@ import java.util.Objects;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${app.api.manage-prefix}/sign")
+@Slf4j
 public class SignController {
 
     private final SignRepo signRepo;
     private final QueryConfigSignRepo queryConfigSignRepo;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @GetMapping
     public List<Sign> list() {
@@ -53,7 +61,7 @@ public class SignController {
     @DeleteMapping("/{id}")
     public CommResponse delete(@PathVariable("id") String id) {
         // Check if this sign is associated with any query configurations
-        if (queryConfigSignRepo.existsBySignId(id)) {
+        if (queryConfigSignRepo.existsByAppId(id)) {
             return new CommResponse(400, "Cannot delete: Sign is used by one or more query configurations", null);
         }
 
@@ -77,15 +85,21 @@ public class SignController {
 
     @GetMapping("/query-configs/{appId}")
     public List<QueryConfigSign> queryConfigSignsBySign(@PathVariable("appId") String appId) {
-        return queryConfigSignRepo.findBySignId(appId);
+        return queryConfigSignRepo.findByAppId(appId);
     }
 
     @PostMapping("/query-configs/{appId}")
+    @Transactional
     public CommResponse saveQueryConfigSign(@PathVariable("appId") String appId, @RequestBody List<String> queryConfigIds) {
+        log.info("Associating sign {} with query configurations: {}", appId, queryConfigIds);
+        // delete all associations first
+        queryConfigSignRepo.deleteByAppId(appId);
+        entityManager.flush(); // Ensure the delete operation is immediately executed
+
         for (String queryConfigId : queryConfigIds) {
             QueryConfigSign queryConfigSign = new QueryConfigSign();
             queryConfigSign.setSelectId(queryConfigId);
-            queryConfigSign.setSignId(appId);
+            queryConfigSign.setAppId(appId);
             queryConfigSignRepo.save(queryConfigSign);
         }
         return new CommResponse(200, "Associations created successfully", null);

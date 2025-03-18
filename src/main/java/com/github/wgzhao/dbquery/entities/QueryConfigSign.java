@@ -20,5 +20,5 @@ public class QueryConfigSign {
 
     private String selectId;
 
-    private String signId;
+    private String appId;
 }

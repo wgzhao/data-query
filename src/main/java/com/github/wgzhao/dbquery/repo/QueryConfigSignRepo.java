@@ -6,13 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface QueryConfigSignRepo extends JpaRepository<QueryConfigSign, Long> {
-    boolean existsBySignId(String signId);
+    boolean existsByAppId(String AppId);
 
     List<QueryConfigSign> findBySelectId(String queryConfigId);
 
-    List<QueryConfigSign> findBySignId(String signId);
+    List<QueryConfigSign> findByAppId(String AppId);
 
-    boolean existsBySelectIdAndSignId(String queryConfigId, String signId);
+    boolean existsBySelectIdAndAppId(String queryConfigId, String AppId);
 
-    QueryConfigSign findBySelectIdAndSignId(String queryConfigId, String signId);
+    QueryConfigSign findBySelectIdAndAppId(String queryConfigId, String AppId);
+
+    void deleteByAppId(String appId);
 }

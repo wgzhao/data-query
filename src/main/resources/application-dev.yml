@@ -28,7 +28,7 @@ spring:
       database: 0
       host: 188.175.3.146
       port: 6379
-      password: redis@123
+      password: eeng8Tho
   jpa:
     show-sql: true
 

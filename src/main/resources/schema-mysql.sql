@@ -69,7 +69,7 @@ create table if not exists query_logs
 CREATE TABLE IF NOT EXISTS `query_config_sign` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `select_id` VARCHAR(200) NOT NULL,
-    `sign_id` VARCHAR(16) NOT NULL,
+    `app_id` VARCHAR(16) NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
