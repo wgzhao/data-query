@@ -20,11 +20,16 @@ public class ConnectionDB {
 
     public List<Map<String, Object>> executeSQL(QueryConfig queryConfig, DataSources dataSource)
             throws ClassNotFoundException, SQLException {
+
+        return executeSQL(queryConfig.getQuerySql(), dataSource);
+    }
+
+    public List<Map<String, Object>> executeSQL(String querySql, DataSources dataSource)
+            throws ClassNotFoundException, SQLException {
         String dbUrl = dataSource.getUrl();
         String user = dataSource.getUsername();
         String pass = dataSource.getPassword();
         String jdbcDriver = dataSource.getDriver();
-        String sql = queryConfig.getQuerySql();
 
         List<Map<String, Object>> result = new ArrayList<>();
 
@@ -35,7 +40,7 @@ public class ConnectionDB {
         Class.forName(jdbcDriver);
         conn = DriverManager.getConnection(dbUrl, user, pass);
         stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery(querySql);
         ResultSetMetaData rsmd = rs.getMetaData();
         int numberOfColumns = rsmd.getColumnCount();
         while (rs.next()) {
