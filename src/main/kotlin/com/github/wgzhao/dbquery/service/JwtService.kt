@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.http.HttpServletRequest
 import lombok.extern.slf4j.Slf4j
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
@@ -15,24 +17,15 @@ import javax.crypto.SecretKey
 
 @Slf4j
 @Component
-class JwtService {
+class JwtService(
     @Value("\${jwt.expiration.access-token}")
-    private val accessTokenExpiration = 0
+    private val accessTokenExpiration: Int = 0
+) {
 
-    @Value("\${jwt.expiration.refresh-token}")
-    private val refreshTokenExpiration = 0
-
-    @Value("\${jwt.expiration.reset-password}")
-    private val resetPasswordTokenExpiration = 0
-
-    @Value("\${jwt.expiration.enable-account}")
-    private val enableAccountTokenExpiration = 0
+    val logger: Logger = LoggerFactory.getLogger(JwtService::class.java)
 
     fun <T> extractClaim(token: String?, claimsResolver: Function<Claims?, T?>): T? {
-        val claims = extractAllClaims(token)
-        if (claims == null) {
-            return null
-        }
+        val claims = extractAllClaims(token) ?: return null
         return claimsResolver.apply(claims)
     }
 
@@ -43,7 +36,7 @@ class JwtService {
 
     fun createToken(claims: MutableMap<String?, Any?>?, username: String?): String? {
         val now = Date()
-        val expiryDate = Date(now.getTime() + accessTokenExpiration)
+        val expiryDate = Date(now.time + accessTokenExpiration)
 
         return Jwts.builder()
             .claims(claims)
@@ -74,12 +67,12 @@ class JwtService {
     // Check if the token is valid and not expired
     fun validateToken(token: String?, userDetails: UserDetails): Boolean {
         val username = extractUsername(token)
-        return (username == userDetails.getUsername() && !isTokenExpired(token))
+        return (username == userDetails.username && !isTokenExpired(token))
     }
 
     // Extract the username from the JWT token
     fun extractUsername(token: String?): String {
-        return extractClaim<String>(token, java.util.function.Function { obj: Claims? -> obj.getSubject() })!!
+        return extractClaim<String>(token, java.util.function.Function { obj: Claims? -> obj?.subject })!!
     }
 
     private fun extractExpiration(token: String?): Date? {
@@ -98,15 +91,15 @@ class JwtService {
                 .parseSignedClaims(jwtToken)
                 .getPayload()
         } catch (ex: ExpiredJwtException) {
-            JwtService.log.error("Expired JWT token")
+            logger.error("Expired JWT token")
         } catch (ex: UnsupportedJwtException) {
-            JwtService.log.error("Unsupported JWT token")
+            logger.error("Unsupported JWT token")
         } catch (ex: MalformedJwtException) {
-            JwtService.log.error("Invalid JWT token")
+            logger.error("Invalid JWT token")
         } catch (ex: SignatureException) {
-            JwtService.log.error("JWT signature does not match locally computed signature")
+            logger.error("JWT signature does not match locally computed signature")
         } catch (ex: IllegalArgumentException) {
-            JwtService.log.error("JWT claims string is empty")
+            logger.error("JWT claims string is empty")
         }
         return null
     }

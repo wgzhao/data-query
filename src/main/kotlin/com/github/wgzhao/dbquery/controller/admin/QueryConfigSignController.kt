@@ -98,7 +98,6 @@ import org.springframework.http.ResponseEntity
 import com.github.wgzhao.dbquery.errors.GlobalExceptionHandler
 import com.github.wgzhao.dbquery.param.RestResponse
 import org.springframework.data.jpa.repository.JpaRepository
-import com.github.wgzhao.dbquery.service.impl.DBQueryServiceImpl
 import java.util.HashMap
 import java.util.Locale
 import org.apache.commons.text.StringSubstitutor

@@ -3,31 +3,26 @@ package com.github.wgzhao.dbquery.util
 import jakarta.servlet.http.HttpServletRequest
 
 object HttpUtil {
-    fun getClientIpAddr(request: HttpServletRequest): String? {
-        var ip = request.getHeader("X-Forwarded-For")
+    fun getClientIpAddr(request: HttpServletRequest): String? = request.clientIp()
+}
 
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("Proxy-Client-IP")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("WL-Proxy-Client-IP")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("HTTP_CLIENT_IP")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("X-Real-IP")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getHeader("X-Client-IP")
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equals(ip, ignoreCase = true)) {
-            ip = request.getRemoteAddr()
-        }
+// Extension function provides a concise, idiomatic Kotlin API.
+fun HttpServletRequest.clientIp(): String? {
+    val headerKeys = listOf(
+        "X-Forwarded-For",
+        "Proxy-Client-IP",
+        "WL-Proxy-Client-IP",
+        "HTTP_CLIENT_IP",
+        "HTTP_X_FORWARDED_FOR",
+        "X-Real-IP",
+        "X-Client-IP"
+    )
 
-        return ip
-    }
+    return headerKeys.firstNotNullOfOrNull { key ->
+        this.getHeader(key)
+            ?.split(',')
+            ?.asSequence()
+            ?.map { it.trim() }
+            ?.firstOrNull { it.isNotEmpty() && !it.equals("unknown", ignoreCase = true) }
+    } ?: this.remoteAddr
 }

@@ -33,6 +33,6 @@ class RestResponse<T>
     companion object {
         private const val serialVersionUID = 691617930352197222L
 
-        private val successStatus: Array<Int?> = arrayOf<Int>(200)
+        private val successStatus: Array<Int?> = arrayOf<Int?>(200)
     }
 }

@@ -12,38 +12,35 @@ import java.sql.Statement
 class ConnectionDB {
     @Throws(ClassNotFoundException::class, SQLException::class)
     fun executeSQL(queryConfig: QueryConfig, dataSource: DataSources): MutableList<MutableMap<String?, Any?>?> {
-        return executeSQL(queryConfig.getQuerySql(), dataSource)
+        return executeSQL(queryConfig.querySql, dataSource)
     }
 
     @Throws(ClassNotFoundException::class, SQLException::class)
     fun executeSQL(querySql: String?, dataSource: DataSources): MutableList<MutableMap<String?, Any?>?> {
-        val dbUrl = dataSource.getUrl()
-        val user = dataSource.getUsername()
-        val pass = dataSource.getPassword()
-        val jdbcDriver = dataSource.getDriver()
+        val dbUrl = dataSource.url
+        val user = dataSource.username
+        val pass = dataSource.password
+        val jdbcDriver = dataSource.driver
 
-        val result: MutableList<MutableMap<String?, Any?>?> = ArrayList<MutableMap<String?, Any?>?>()
-
-        var rsMap: MutableMap<String?, Any?>?
-        val conn: Connection
-        val stmt: Statement
+        val result: MutableList<MutableMap<String?, Any?>?> = ArrayList()
 
         Class.forName(jdbcDriver)
-        conn = DriverManager.getConnection(dbUrl, user, pass)
-        stmt = conn.createStatement()
-        val rs = stmt.executeQuery(querySql)
-        val rsmd = rs.getMetaData()
-        val numberOfColumns = rsmd.getColumnCount()
-        while (rs.next()) {
-            rsMap = HashMap<String?, Any?>(numberOfColumns)
-            for (i in 1..<numberOfColumns + 1) {
-                rsMap.put(rsmd.getColumnLabel(i), rs.getObject(i))
+        DriverManager.getConnection(dbUrl, user, pass).use { conn ->
+            conn.createStatement().use { stmt ->
+                val rs = stmt.executeQuery(querySql)
+                val rsmd = rs.metaData
+                val numberOfColumns = rsmd.columnCount
+                while (rs.next()) {
+                    val rsMap: MutableMap<String?, Any?> = HashMap(numberOfColumns)
+                    for (i in 1..numberOfColumns) {
+                        rsMap[rsmd.getColumnLabel(i)] = rs.getObject(i)
+                    }
+                    result.add(rsMap)
+                }
+                rs.close()
             }
-            result.add(rsMap)
+            conn.close()
         }
-        rs.close()
-        stmt.close()
-        conn.close()
 
         return result
     }

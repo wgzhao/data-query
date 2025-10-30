@@ -8,12 +8,12 @@ data class QueryResult (
 ) {
     companion object {
         // 静态方法构造统一返回结果
-        fun <T> success(data: List<Map<String, Any>>?): QueryResult {
-            return QueryResult(0, "success", data?.size, data)
+        fun  success(data: List<Map<String, Any>>?): QueryResult {
+            return QueryResult(0, "success", data.orEmpty().size, data)
         }
 
-        fun <T> error(code: Int, message: String?): ApiResponse<T?> {
-            return ApiResponse<T?>(code, message, null)
+        fun error(code: Int, message: String?): QueryResult {
+            return QueryResult(code, message, 0, null)
         }
     }
 }

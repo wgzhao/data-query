@@ -10,11 +10,11 @@ import lombok.Setter
 @Table(name = "query_config")
 data class QueryConfig(
     @Id
-    val selectId: String? = null,
-    val querySql: String? = null,
-    val dataSource: String? = null,
-    val cacheTime: Int = 0,
-    val note: String? = null,
-    val isEnable: Boolean = false,
-    val enableCache: Boolean = false
+    var selectId: String,
+    var querySql: String,
+    var dataSource: String,
+    var cacheTime: Int = 0,
+    var note: String? = null,
+    var isEnable: Boolean = false,
+    var enableCache: Boolean = false
 ) : BaseEntity() {}

@@ -24,7 +24,8 @@ interface QueryLogRepo
                 from QueryLog
                 where createdAt > ?1
                 group by date(createdAt) order by d asc
-                """.trimIndent(), nativeQuery = false
+                """,
+        nativeQuery = false
     )
     fun statisticByDate(date: Date?): MutableList<MutableMap<String?, Any?>?>?
 }

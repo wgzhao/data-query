@@ -14,7 +14,7 @@ class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handleMissingRequestParameter(request: HttpServletRequest, ex: Exception): ResponseEntity<String?> {
-        logger.info("Exception occurred: URI= " + request.getRequestURI() + ", error: " + ex.message)
+        logger.info("Exception occurred: URI= " + request.requestURI + ", error: " + ex.message)
 
         return ResponseEntity.status(400).body<String?>(ex.message)
     }
