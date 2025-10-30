@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      mode: NEVER
+      encoding: UTF-8
+      platform: mysql
+
+server:
+  port: 9090
+  ssl:
+    enabled: false
+logging:
+  file:
+    path: logs/
+    name: application.log
+  logback:
+    rollingpolicy:
+      max-history: 7
+
+jwt:
+  # different expiration time for each token
+  expiration:
+    access-token: 86400000          # 1 hour
+    refresh-token: 604800000       # 7 days
+    reset-password: 900000         # 15 minutes
+    enable-account: 900000
+app:
+  api:
+    manage-prefix: /admin/api/v1
+    query-prefix: /api/v1

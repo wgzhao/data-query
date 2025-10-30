@@ -1,0 +1,9 @@
+.vscode/
+.settings/
+.idea/
+target/
+*.log
+*.log.gz
+*.versionsBackup
+*.gz
+/.env
