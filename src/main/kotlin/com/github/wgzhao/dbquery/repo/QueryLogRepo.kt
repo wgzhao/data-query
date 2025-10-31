@@ -7,16 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.*
 
-interface QueryLogRepo
-
-    : JpaRepository<QueryLog?, Long?> {
+interface QueryLogRepo : JpaRepository<QueryLog, Long> {
     fun findBySelectId(selectId: String?): MutableList<QueryLog?>?
 
-    fun findAllBySelectId(selectId: String?, pageable: Pageable?): Page<QueryLog?>?
+    fun findAllBySelectId(selectId: String?, pageable: Pageable?): Page<QueryLog>?
 
-    fun findAllByAppId(appId: String?, pageable: Pageable?): Page<QueryLog?>?
+    fun findAllByAppId(appId: String?, pageable: Pageable?): Page<QueryLog>?
 
-    fun findByQuerySqlContaining(s: String?, pageable: Pageable?): Page<QueryLog?>?
+    fun findByQuerySqlContaining(s: String?, pageable: Pageable?): Page<QueryLog>?
 
     @Query(
         value = """

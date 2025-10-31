@@ -2,13 +2,13 @@ package com.github.wgzhao.dbquery.util
 
 import com.github.wgzhao.dbquery.dto.DatabaseType
 import com.github.wgzhao.dbquery.entities.DataSources
-import org.slf4j.LoggerFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.util.Properties
 
 object DbUtil {
-    private val logger = LoggerFactory.getLogger(DbUtil::class.java)
+    private val logger = KotlinLogging.logger {  }
 
     // guess database type from jdbc url
     fun getDbType(url: String): DatabaseType = when {
@@ -48,10 +48,10 @@ object DbUtil {
                 return "success"
             }
         } catch (e: ClassNotFoundException) {
-            logger.error("Driver not found: {}", db.driver, e)
+            logger.error {"Driver not found: ${db.driver}: $e"}
             return "Driver not found: ${db.driver}"
         } catch (e: SQLException) {
-            logger.error("Connection failed: {}", e.message, e)
+            logger.error {"Connection failed:${e.message}: $e"}
             return e.message ?: e.toString()
         }
     }

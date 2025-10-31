@@ -8,8 +8,23 @@ import org.springframework.stereotype.Service
 @Service
 class SignService(val signRepo: SignRepo) {
 
+    fun findAll(): List<Sign> {
+        return signRepo.findAll()
+    }
+
+    fun save(sign: Sign): Sign {
+        return signRepo.save(sign)
+    }
     fun querySign(appId: String): Sign? {
         return signRepo.findById(appId).orElse(null)
+    }
+
+    fun existsById(appId: String): Boolean {
+        return signRepo.existsById(appId)
+    }
+
+    fun deleteById(appId: String) {
+        signRepo.deleteById(appId)
     }
 
     fun genSign(applier: String?): Sign {

@@ -3,14 +3,14 @@ spring:
     active: dev
   jpa:
     open-in-view: false
-    hibernate:
-      ddl-auto: update
   sql:
     init:
       mode: NEVER
       encoding: UTF-8
       platform: mysql
-
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
 server:
   port: 9090
   ssl:

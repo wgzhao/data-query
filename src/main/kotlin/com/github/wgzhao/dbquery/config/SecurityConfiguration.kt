@@ -5,20 +5,18 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.*
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.JdbcUserDetailsManager
-import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -28,10 +26,10 @@ import javax.sql.DataSource
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration(val jwtFilter: JwtFilter, val dataSource: DataSource) {
+open class SecurityConfiguration(val jwtFilter: JwtFilter, val dataSource: DataSource) {
     @Bean
     @Throws(Exception::class)
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain? {
+    open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain? {
         // Define patterns that Spring Security should handle using a RequestMatcher lambda
         val protectedPaths = RequestMatcher { req: HttpServletRequest ->
             val path = req.requestURI ?: req.servletPath ?: ""
@@ -55,7 +53,7 @@ class SecurityConfiguration(val jwtFilter: JwtFilter, val dataSource: DataSource
             }
             .httpBasic(Customizer.withDefaults())
             .formLogin(Customizer.withDefaults())
-            .authenticationProvider(authenticationProvider())
+//            .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling { exceptionHandling: ExceptionHandlingConfigurer<HttpSecurity?>? ->
                 exceptionHandling!!
@@ -72,53 +70,23 @@ class SecurityConfiguration(val jwtFilter: JwtFilter, val dataSource: DataSource
 
     // Keep the rest of the beans unchanged
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
+    open fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
     @Bean
-    fun authenticationProvider(): AuthenticationProvider {
-        val authenticationProvider = DaoAuthenticationProvider()
-        authenticationProvider.setUserDetailsService(userDetailsService(dataSource))
-        authenticationProvider.setPasswordEncoder(passwordEncoder())
-        return authenticationProvider
-    }
-
-    @Bean
     @Throws(Exception::class)
-    fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager? {
-        return config.getAuthenticationManager()
+    open fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager? {
+        return config.authenticationManager
     }
 
     @Bean
-    fun users(dataSource: DataSource?): UserDetailsManager {
-        val user = User.builder()
-            .username("user")
-            .password(passwordEncoder().encode("admin123"))
-            .roles("USER")
-            .build()
-        val admin = User.builder()
-            .username("admin")
-            .password(passwordEncoder().encode("admin123"))
-            .roles("USER", "ADMIN")
-            .build()
-        val users = JdbcUserDetailsManager(dataSource)
-        if (!users.userExists("user")) {
-            users.createUser(user)
-        }
-        if (!users.userExists("admin")) {
-            users.createUser(admin)
-        }
-        return users
-    }
-
-    @Bean
-    fun userDetailsService(dataSource: DataSource?): UserDetailsService {
+    open fun userDetailsService(dataSource: DataSource): UserDetailsService {
         return JdbcUserDetailsManager(dataSource)
     }
 
     @Bean
-    fun corsConfigurer(): WebMvcConfigurer {
+    open fun corsConfigurer(): WebMvcConfigurer {
         return object : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")

@@ -1,12 +1,10 @@
 package com.github.wgzhao.dbquery.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.http.HttpServletRequest
-import lombok.extern.slf4j.Slf4j
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
@@ -15,14 +13,13 @@ import java.util.*
 import java.util.function.Function
 import javax.crypto.SecretKey
 
-@Slf4j
 @Component
 class JwtService(
     @Value("\${jwt.expiration.access-token}")
     private val accessTokenExpiration: Int = 0
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger(JwtService::class.java)
+    private val logger = KotlinLogging.logger {  }
 
     fun <T> extractClaim(token: String?, claimsResolver: Function<Claims?, T?>): T? {
         val claims = extractAllClaims(token) ?: return null
@@ -91,15 +88,15 @@ class JwtService(
                 .parseSignedClaims(jwtToken)
                 .getPayload()
         } catch (ex: ExpiredJwtException) {
-            logger.error("Expired JWT token")
+            logger.error {"Expired JWT token" }
         } catch (ex: UnsupportedJwtException) {
-            logger.error("Unsupported JWT token")
+            logger.error {"Unsupported JWT token" }
         } catch (ex: MalformedJwtException) {
-            logger.error("Invalid JWT token")
+            logger.error {"Invalid JWT token" }
         } catch (ex: SignatureException) {
-            logger.error("JWT signature does not match locally computed signature")
+            logger.error {"JWT signature does not match locally computed signature" }
         } catch (ex: IllegalArgumentException) {
-            logger.error("JWT claims string is empty")
+            logger.error {"JWT claims string is empty" }
         }
         return null
     }

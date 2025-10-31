@@ -7,8 +7,8 @@ data class ApiResponse<T>(val code: Int, val message: String?, val result: T?) {
             return ApiResponse<T?>(0, "success", data)
         }
 
-        fun <T> error(code: Int, message: String?): ApiResponse<T?> {
-            return ApiResponse<T?>(code, message, null)
+        fun <T> error(code: Int, message: String): ApiResponse<T?> {
+            return ApiResponse(code, message, null)
         }
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConditionalOnProperty(name = ["springdoc.api-docs.enabled"], havingValue = "true", matchIfMissing = true)
-class SpringDocConfig {
+open class SpringDocConfig {
     private val license: License? = License().name("Apache 2.0").url("https://github.com/wgzhao/data-query")
 
     private fun securityScheme(): SecurityScheme? {
@@ -23,7 +23,7 @@ class SpringDocConfig {
     }
 
     @Bean
-    fun adminApiCustomizer(): OpenApiCustomizer {
+    open fun adminApiCustomizer(): OpenApiCustomizer {
         return OpenApiCustomizer { openApi: OpenAPI? ->
             openApi!!.addSecurityItem(
                 SecurityRequirement()
@@ -34,7 +34,7 @@ class SpringDocConfig {
     }
 
     @Bean
-    fun openApiCustomiser(): OpenApiCustomiser {
+    open fun openApiCustomiser(): OpenApiCustomiser {
         return OpenApiCustomiser { openApi: OpenAPI? ->
             openApi!!.addSecurityItem(
                 SecurityRequirement()
@@ -45,14 +45,14 @@ class SpringDocConfig {
     }
 
     @Bean
-    fun adminOpenApi(): GroupedOpenApi? {
+    open fun adminOpenApi(): GroupedOpenApi? {
         return GroupedOpenApi.builder().group("admin").pathsToMatch("/admin/**")
             .addOpenApiCustomizer(adminApiCustomizer())
             .build()
     }
 
     @Bean
-    fun queryOpenApi(): GroupedOpenApi? {
+    open fun queryOpenApi(): GroupedOpenApi? {
         return GroupedOpenApi.builder().group("query").pathsToMatch("/api/v1/**").build()
     }
 

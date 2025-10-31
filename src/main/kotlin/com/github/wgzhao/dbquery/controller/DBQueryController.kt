@@ -2,14 +2,13 @@ package com.github.wgzhao.dbquery.controller
 
 import com.github.wgzhao.dbquery.constant.Constants
 import com.github.wgzhao.dbquery.dto.QueryResult
-import com.github.wgzhao.dbquery.errors.ParamException
 import com.github.wgzhao.dbquery.service.DBQueryService
 import com.github.wgzhao.dbquery.service.SignService
 import com.github.wgzhao.dbquery.util.ParamUtil
 import com.github.wgzhao.dbquery.util.SignUtil
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.util.Assert
 import org.springframework.web.bind.annotation.*
@@ -23,7 +22,7 @@ class DBQueryController(
     val signService: SignService,
     val environment: Environment
 ) {
-    private val logger = LoggerFactory.getLogger(DBQueryController::class.java)
+    private val logger = KotlinLogging.logger {  }
 
     @GetMapping("/")
     fun index(): String {
@@ -63,7 +62,7 @@ class DBQueryController(
         try {
             checkControlParams(queryParams, controlParams)
         } catch (e: Exception) {
-            logger.error("Control params is invalid, error msg is {}", e.message)
+            logger.error {"Control params is invalid, error msg is ${e.message}" }
             response.status = HttpServletResponse.SC_BAD_REQUEST
             return QueryResult.error(HttpServletResponse.SC_BAD_REQUEST, e.message)
         }
@@ -78,27 +77,23 @@ class DBQueryController(
 
             // convert lowerQueryParams (MutableMap<String, String>) to MutableMap<String, String> expected by service
             val lowerQueryParamsGeneric: MutableMap<String, String> = HashMap()
-            lowerQueryParams.forEach { k, v -> if (k != null && v != null) lowerQueryParamsGeneric[k] = v }
+            lowerQueryParams.forEach { (k, v) -> lowerQueryParamsGeneric[k] = v }
 
-            val result = queryService.query(sid, appId, if (lowerQueryParamsGeneric.isEmpty()) null else lowerQueryParamsGeneric)
+            val result = queryService.query(sid, appId, lowerQueryParamsGeneric.ifEmpty { null })
             // queryService may return nullable list with nullable maps; normalize to List<Map<String, Any>>?
-            val normalizedResult: List<Map<String, Any>>? = result?.mapNotNull { it }
+            val normalizedResult: List<Map<String, Any>>? = result?.map { it }
             val queryResult = QueryResult.success(normalizedResult)
             return queryResult
-        } catch (e: ParamException) {
-            logger.error("invalid params: {}", e.message)
-            response.status = HttpServletResponse.SC_BAD_REQUEST
-            return QueryResult.error(HttpServletResponse.SC_BAD_REQUEST, e.message)
         } catch (e: ClassNotFoundException) {
-            logger.error("Query failed, error msg is {}", e.message)
+            logger.error {"Query failed, error msg is ${e.message}" }
             response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             return QueryResult.error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.message)
         } catch (e: SQLException) {
-            logger.error("Query failed, error msg is {}", e.message)
+            logger.error {"Query failed, error msg is ${e.message}" }
             response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             return QueryResult.error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.message)
         } catch (e: RuntimeException) {
-            logger.error("Query failed, error msg is {}", e.message)
+            logger.error {"Query failed, error msg is ${e.message}" }
             response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             return QueryResult.error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.message)
         }
@@ -127,7 +122,7 @@ class DBQueryController(
 
             val signs = signService.querySign(appId!!)
 
-            require(!(signs == null || signs.appKey == null)) { "无效的 " + Constants.APP_ID }
+            require(signs != null) { "无效的 " + Constants.APP_ID }
 
             require(SignUtil.validSign(sign, queryParams, signs)) { "无效签名 " }
         }
