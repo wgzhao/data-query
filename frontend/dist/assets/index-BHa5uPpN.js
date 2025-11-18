@@ -1,0 +1,1 @@
+import{_ as e}from"./index-I9y5uwlj.js";import{U as r,V as n}from"./vue-DQIp4sjX.js";import"./vuetify-BfLt-5w1.js";const o={};function t(c,s){return n(),r("div",null,"Index")}const i=e(o,[["render",t]]);export{i as default};

@@ -1,0 +1,1 @@
+import{h as t,x as n,a3 as r}from"./vue-DQIp4sjX.js";const l=t({__name:"logout",setup(s){const o=r(),e=()=>{localStorage.removeItem("token"),o.push("/login")};return n(()=>{e()}),(u,a)=>null}});export{l as default};

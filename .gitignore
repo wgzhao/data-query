@@ -1,9 +1,11 @@
 .vscode/
 .settings/
 .idea/
-target/
+backend/target/
 *.log
 *.log.gz
 *.versionsBackup
 *.gz
-/.env
+frontend/.env
+frontend/node_modules
+
