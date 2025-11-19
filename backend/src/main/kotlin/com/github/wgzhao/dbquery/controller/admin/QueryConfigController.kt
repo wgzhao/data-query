@@ -59,7 +59,7 @@ class QueryConfigController(
         return cacheUtil.deleteKeys(selectId)
     }
 
-    @PostMapping("/testQuery")
+    @PostMapping("/test-query")
     fun testQuery(@RequestBody payload: MutableMap<String?, String>): QueryResult {
         val sourceId: String = payload["sourceId"]!!
         val querySql = payload["querySql"]

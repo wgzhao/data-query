@@ -6,6 +6,6 @@ backend/target/
 *.log.gz
 *.versionsBackup
 *.gz
-frontend/.env
+backend/.env
 frontend/node_modules
 
