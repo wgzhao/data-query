@@ -85,21 +85,19 @@
             <!-- 统一的按钮区域 -->
             <v-row class="mt-4">
               <v-col cols="12">
-                <div class="d-flex justify-space-between align-center">
-                  <v-btn
-                    v-if="!viewOnly"
-                    color="primary"
-                    variant="text"
-                    size="small"
-                    prepend-icon="mdi-connection"
-                    @click="testConn"
-                    :loading="testingConnection"
-                  >
-                    测试连接
-                  </v-btn>
-                  <div v-else></div>
-
+                <div class="d-flex justify-end align-center">
                   <div class="d-flex gap-3">
+                    <v-btn
+                      v-if="!viewOnly"
+                      color="info"
+                      variant="outlined"
+                      size="small"
+                      prepend-icon="mdi-connection"
+                      @click="testConn"
+                      :loading="testingConnection"
+                    >
+                      测试连接
+                    </v-btn>
                     <v-btn
                       color="secondary"
                       variant="outlined"
@@ -165,7 +163,7 @@ const connFlag = ref<string>();
 const valid = ref<boolean>(false);
 const showPassword = ref<boolean>(false);
 const loading = ref(false);
-const form = ref(null);
+const form = ref<HTMLFormElement | null>(null);
 const isEditing = computed(() => !!props.dataSource);
 
 const drivers = ref<string[]>([
@@ -224,7 +222,7 @@ const testConn = async () => {
       connFlag.value = "mdi-check";
       setToast("连接成功", false);
     }
-  } catch (err) {
+  } catch (err: any) {
     connFlag.value = "mdi-close";
     setToast(`连接失败: ${err.message}`, true);
   } finally {
@@ -239,13 +237,13 @@ const save = async () => {
   }
   loading.value = true;
   try {
-    DataSourcesService.save(formData.value).then(res => {
+    DataSourcesService.save(formData.value).then(() => {
       setToast("保存成功！", false);
       setTimeout(() => {
         emit("saved");
       }, 1000);
     });
-  } catch (err) {
+  } catch (err: any) {
     setToast(`保存失败: ${err.message}`, true);
   } finally {
     loading.value = false;

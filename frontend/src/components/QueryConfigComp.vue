@@ -12,8 +12,7 @@
             class="form-container"
           >
             <v-row dense>
-              <!-- 左侧列：基本信息 -->
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="4">
                 <v-text-field
                   :rules="[rules.required, rules.checkId]"
                   label="查询ID"
@@ -23,6 +22,8 @@
                   required
                   :disabled="isEditing"
                 />
+              </v-col>
+              <v-col cols="12" md="4">
                 <v-select
                   label="数据源"
                   v-model="form.dataSource"
@@ -34,12 +35,35 @@
                   :rules="[rules.required]"
                   required
                 />
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  label="备注"
+                  v-model="form.note"
+                  density="compact"
+                  variant="outlined"
+                />
+              </v-col>
+            </v-row>
+
+            <v-row dense>
+              <v-col cols="12" md="4">
+                <v-checkbox
+                  label="是否启用"
+                  v-model="form.enabled"
+                  density="compact"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="12" md="4">
                 <v-checkbox
                   label="是否启用缓存"
                   v-model="form.enableCache"
                   density="compact"
                   hide-details
                 />
+              </v-col>
+              <v-col cols="12" md="4">
                 <v-text-field
                   v-if="form.enableCache"
                   label="缓存时间"
@@ -51,31 +75,23 @@
                   required
                 />
               </v-col>
+            </v-row>
 
-              <!-- 右侧列：查询语句和备注 -->
-              <v-col cols="12" md="6">
-                <v-textarea
-                  :rules="[rules.required]"
-                  label="查询语句"
+            <v-row dense>
+              <v-col cols="12">
+                <label class="v-label text-caption">查询语句</label>
+                <codemirror
                   v-model="form.querySql"
-                  density="compact"
-                  variant="outlined"
-                  rows="8"
-                  :error-messages="sqlError"
-                  auto-grow
-                />
-                <v-checkbox
-                  label="是否启用"
-                  v-model="form.enable"
-                  density="compact"
-                  hide-details
+                  :style="{
+                    height: '400px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px'
+                  }"
+                  :autofocus="false"
+                  :indent-with-tab="false"
+                  :tab-size="2"
+                  :extensions="extensions"
                   class="mt-2"
-                />
-                <v-text-field
-                  label="备注"
-                  v-model="form.note"
-                  density="compact"
-                  variant="outlined"
                 />
               </v-col>
             </v-row>
@@ -224,9 +240,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
+import { Codemirror } from "vue-codemirror";
+import { sql } from "@codemirror/lang-sql";
 import QueryConfigService from "@/services/query-configs";
 import { QueryConfig, type Toast } from "@/types";
 import ToastInfo from "@/components/ToastInfo.vue";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { useTheme } from "vuetify";
 
 const props = defineProps({
   configData: {
@@ -243,13 +263,23 @@ const defaultForm = {
   enableCache: true,
   cacheTime: 600,
   querySql: "",
-  enable: true,
+  enabled: true,
   note: ""
 };
 
+const theme = useTheme();
+
+const extensions = computed(() => {
+  const baseExtensions = [sql()];
+  if (theme.global.name.value === "dark") {
+    baseExtensions.push(oneDark);
+  }
+  return baseExtensions;
+});
+
 const valid = ref(false);
 const loading = ref(false);
-const formRef = ref(null);
+const formRef = ref<HTMLFormElement | null>(null);
 const isEditing = computed(() => !!props.configData);
 
 const rules = ref({
@@ -263,7 +293,7 @@ const rules = ref({
   }
 });
 
-const form = ref({ ...defaultForm });
+const form = ref<Partial<QueryConfig>>({ ...defaultForm });
 
 const toastCtl = ref<Toast>({
   showToast: false,
@@ -279,8 +309,7 @@ const setToast = (msg: string, isError: boolean = true) => {
   };
 };
 
-const dbsources = ref([]);
-const sqlError = ref("");
+const dbsources = ref<any[]>([]);
 
 const save = async () => {
   if (!formRef.value?.validate()) {
@@ -290,12 +319,12 @@ const save = async () => {
 
   loading.value = true;
   try {
-    const res = await QueryConfigService.save(form.value);
+    await QueryConfigService.save(form.value as QueryConfig);
     setToast("保存成功", false);
     setTimeout(() => {
       emit("saved");
     }, 1000);
-  } catch (error) {
+  } catch (error: any) {
     setToast(`保存失败: ${error.message}`, true);
   } finally {
     loading.value = false;

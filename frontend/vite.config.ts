@@ -93,7 +93,7 @@ export default defineConfig(({ mode }) => {
 
     // 优化依赖预构建
     optimizeDeps: {
-      include: ["vue", "vue-router", "pinia", "vuetify"]
+      include: ["vue", "vue-router", "pinia", "vuetify", 'codemirror', '@codemirror/lang-sql', '@codemirror/theme-one-dark']
     }
   };
 });

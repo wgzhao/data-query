@@ -20,7 +20,7 @@ export interface QueryConfig extends Basic {
   querySql: string;
   dataSource: string;
   enabled: boolean;
-  cacheTime: Int16Array;
+  cacheTime: number;
   note: string;
   enableCache: boolean;
 }
